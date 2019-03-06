@@ -1,0 +1,6 @@
+# flask
+# flask-cors
+# pillow
+# brother_ql
+# requests
+# python-dateutil

@@ -1,0 +1,41 @@
+#!/bin/bash
+echo "Starting Lightning Node!"
+source /usr/src/app/env/bin/activate
+
+for i in `seq 1 10`;
+do
+        echo $i;
+        sleep 0.25;
+	python3 --version
+done  
+# echo 
+
+
+# download Bitcoin Core binary and also check out commit on GitHub
+# git clone --branch $BITCOIND_VERSION git@github.com:bitcoin/bitcoin.git --depth 1
+
+wget https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/bitcoin-$BITCOIND_VERSION-arm-linux-gnueabihf.tar.gz
+wget https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/SHA256SUMS.asc
+wget https://bitcoin.org/laanwj-releases.asc
+
+tar -xvf bitcoin-$BITCOIND_VERSION-arm-linux-gnueabihf.tar.gz
+install -m 0755 -o root -g root -t /usr/local/bin bitcoin-$BITCOIND_VERSION/bin/*
+
+bitcoind --version
+
+# download LND binary and also check out commit on GitHub
+# git clone --branch $LND_VERSION git@github.com:lightningnetwork/lnd.git --depth 1
+tar -xzf lnd-linux-armv7-$LND_VERSION.tar.gz
+wget https://github.com/lightningnetwork/lnd/releases/tag/v0.5.2-beta
+wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/lnd-linux-armv7-$LND_VERSION.tar.gz
+wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
+wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt.sig
+wget https://keybase.io/roasbeef/pgp_keys.asc
+
+tar -xvf lnd-linux-armv7-$LND_VERSION.tar.gz
+install -m 0755 -o root -g root -t /usr/local/bin lnd-linux-armv7-$LND_VERSION/*
+
+while [[ true ]]; do
+	echo "Node is Up!!";
+	sleep 5;
+done
