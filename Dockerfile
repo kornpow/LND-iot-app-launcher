@@ -33,8 +33,13 @@ rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
+# Create python environment and install dependancies
 RUN python3 -m venv env --without-pip
 COPY ./requirements.txt /requirements.txt
+
+# Copy autostart service files
+COPY ./lnd.service /etc/systemd/system/lnd.service
+COPY ./bitcoind.service /etc/systemd/system/bitcoind.service
 
 RUN /bin/bash -c 'source /usr/src/app/env/bin/activate && pip3 install -r /requirements.txt --only-binary=:all: --python-version 36 --implementation cp --abi cp36m --platform=linux_armv7l --extra-index-url https://www.piwheels.org/simple --target /usr/src/app/env/lib/python3.6/site-packages'
 
@@ -43,5 +48,7 @@ RUN echo "source /usr/src/app/env/bin/activate" >> /etc/bash.bashrc && echo "sou
 ENV VERSION 0.0.1
 COPY start /usr/src/app
 
+RUN start
+
 ENV INITSYSTEM on
-CMD ["bash", "start"]
+CMD ["bash"]

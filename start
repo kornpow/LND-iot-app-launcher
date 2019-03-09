@@ -35,7 +35,24 @@ wget https://keybase.io/roasbeef/pgp_keys.asc
 tar -xvf lnd-linux-armv7-$LND_VERSION.tar.gz
 install -m 0755 -o root -g root -t /usr/local/bin lnd-linux-armv7-$LND_VERSION/*
 
-while [[ true ]]; do
-	echo "Node is Up!!";
-	sleep 5;
-done
+# Mount Solid State drive
+mkdir /root/bitcoin_data/
+mount -t ext4 /dev/sdb$DATA_PARTITION_NUM /root/bitcoin_data/
+# Link data on drive to standard location used by bitcoind and lnd.
+# Notice no trailing slash on source!
+ln -s /root/bitcoin_data/bitcoin /root/.bitcoin
+ln -s /root/bitcoin_data/lnd /root/.lnd
+
+# Enable service files copied in Dockerfiles
+systemctl enable bitcoind.service
+systemctl enable lnd.service
+
+systemctl start bitcoind.service
+systemctl start lnd.service
+
+echo "Completed download, installation, and autostart setup of LND and Bitcoind!"
+
+# while [[ true ]]; do
+# 	echo "Node is Up!!";
+# 	sleep 5;
+# done

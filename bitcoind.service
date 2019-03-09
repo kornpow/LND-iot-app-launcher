@@ -1,0 +1,21 @@
+# RaspiBolt: systemd unit for bitcoind
+# /etc/systemd/system/bitcoind.service
+
+[Unit]
+Description=Bitcoin daemon
+After=network.target
+
+[Service]
+ExecStartPre=/bin/sh -c 'sleep 30'
+ExecStart=/usr/local/bin/bitcoind -daemon -conf=/root/.bitcoin/bitcoin.conf -pid=/root/.bitcoin/bitcoind.pid
+PIDFile=/root/.bitcoin/bitcoind.pid
+User=root
+Group=root
+Type=forking
+KillMode=process
+Restart=always
+TimeoutSec=120
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
