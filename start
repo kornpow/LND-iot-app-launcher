@@ -52,7 +52,7 @@ systemctl start lnd.service
 
 echo "Completed download, installation, and autostart setup of LND and Bitcoind!"
 
-# while [[ true ]]; do
-# 	echo "Node is Up!!";
-# 	sleep 5;
-# done
+while [[ true ]]; do
+	echo "Node is Up!!";
+	sleep 5;
+done

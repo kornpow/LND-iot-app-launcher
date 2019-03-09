@@ -25,10 +25,10 @@ RUN apt-get update && \
 	# libopenjp2-7 \
 	# libjpeg62 \
 	vim \
+	systemd \
 	sshfs && \
 	pip3 install -U pip setuptools && \
 rm -rf /var/lib/apt/lists/*
-
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
