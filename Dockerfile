@@ -47,8 +47,7 @@ RUN echo "source /usr/src/app/env/bin/activate" >> /etc/bash.bashrc && echo "sou
 
 ENV VERSION 0.0.1
 COPY start /usr/src/app
-
-RUN start
+RUN /usr/src/app/start
 
 ENV INITSYSTEM on
 CMD ["bash"]
