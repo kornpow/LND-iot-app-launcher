@@ -37,20 +37,24 @@ install -m 0755 -o root -g root -t /usr/local/bin lnd-linux-armv7-$LND_VERSION/*
 
 # Mount Solid State drive
 mkdir /root/bitcoin_data/
-mount -t ext4 /dev/sdb$DATA_PARTITION_NUM /root/bitcoin_data/
+echo "UUID=e265cce8-27f4-4b1a-9af0-5034b140457b  /root/bitcoin_data/      ext4	    defaults,errors=remount-ro 0       1" >> /etc/fstab
+# mount -a
+mount -t ext4 /dev/sda$DATA_PARTITION_NUM /root/bitcoin_data/
 # Link data on drive to standard location used by bitcoind and lnd.
 # Notice no trailing slash on source!
 ln -s /root/bitcoin_data/bitcoin /root/.bitcoin
 ln -s /root/bitcoin_data/lnd /root/.lnd
 
 # Enable service files copied in Dockerfiles
-systemctl enable bitcoind.service
-systemctl enable lnd.service
-
-systemctl start bitcoind.service
-systemctl start lnd.service
+bitcoind
+echo "Waiting 30 seconds before starting LND"
+sleep 30
+echo "Starting LND!"
+nohup lnd > /usr/src/app/foo.out 2> /usr/src/app/foo.err < /dev/null &
 
 echo "Completed download, installation, and autostart setup of LND and Bitcoind!"
+
+python3 -m http.server 80 &
 
 while [[ true ]]; do
 	echo "Node is Up!!";
