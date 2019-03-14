@@ -4,3 +4,6 @@
 # brother_ql
 # requests
 # python-dateutil
+grpcio
+googleapis-common-protos
+requests
