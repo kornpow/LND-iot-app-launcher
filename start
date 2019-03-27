@@ -10,6 +10,9 @@ do
 done  
 # echo 
 
+mount -a
+ls /root/bitcoin_data/
+
 
 # download Bitcoin Core binary and also check out commit on GitHub
 # git clone --branch $BITCOIND_VERSION git@github.com:bitcoin/bitcoin.git --depth 1
@@ -36,10 +39,10 @@ tar -xvf lnd-linux-armv7-$LND_VERSION.tar.gz
 install -m 0755 -o root -g root -t /usr/local/bin lnd-linux-armv7-$LND_VERSION/*
 
 # Mount Solid State drive
-mkdir /root/bitcoin_data/
-echo "UUID=e265cce8-27f4-4b1a-9af0-5034b140457b  /root/bitcoin_data/      ext4	    defaults,errors=remount-ro 0       1" >> /etc/fstab
-# mount -a
-mount -t ext4 /dev/sda$DATA_PARTITION_NUM /root/bitcoin_data/
+# mkdir /root/bitcoin_data/
+# 
+
+# mount -t ext4 /dev/sda$DATA_PARTITION_NUM /root/bitcoin_data/
 # Link data on drive to standard location used by bitcoind and lnd.
 # Notice no trailing slash on source!
 ln -s /root/bitcoin_data/bitcoin /root/.bitcoin

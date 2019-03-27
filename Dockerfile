@@ -49,6 +49,9 @@ ENV VERSION 0.0.1
 COPY start /usr/src/app
 
 COPY code /usr/src/app/code
+ARG blockchain_drive_uuid=e265cce8-27f4-4b1a-9af0-5034b140457b
+RUN mkdir /root/bitcoin_data/
+RUN echo "UUID=${blockchain_drive_uuid}  /root/bitcoin_data/      ext4	    defaults,errors=remount-ro 0       1" >> /etc/fstab
 # RUN /usr/src/app/start
 
 ENV INITSYSTEM on
