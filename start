@@ -28,8 +28,9 @@ bitcoind --version
 
 # download LND binary and also check out commit on GitHub
 # git clone --branch $LND_VERSION git@github.com:lightningnetwork/lnd.git --depth 1
-tar -xzf lnd-linux-armv7-$LND_VERSION.tar.gz
-wget https://github.com/lightningnetwork/lnd/releases/tag/v0.5.2-beta
+# tar -xzf lnd-linux-armv7-$LND_VERSION.tar.gz
+
+# Just download binaries instead
 wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/lnd-linux-armv7-$LND_VERSION.tar.gz
 wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
 wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt.sig
@@ -38,17 +39,13 @@ wget https://keybase.io/roasbeef/pgp_keys.asc
 tar -xvf lnd-linux-armv7-$LND_VERSION.tar.gz
 install -m 0755 -o root -g root -t /usr/local/bin lnd-linux-armv7-$LND_VERSION/*
 
-# Mount Solid State drive
-# mkdir /root/bitcoin_data/
-# 
 
-# mount -t ext4 /dev/sda$DATA_PARTITION_NUM /root/bitcoin_data/
 # Link data on drive to standard location used by bitcoind and lnd.
 # Notice no trailing slash on source!
 ln -s /root/bitcoin_data/bitcoin /root/.bitcoin
 ln -s /root/bitcoin_data/lnd /root/.lnd
 
-# Enable service files copied in Dockerfiles
+# start bitcoin
 bitcoind
 echo "Waiting 30 seconds before starting LND"
 sleep 30
