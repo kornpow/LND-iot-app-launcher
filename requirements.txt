@@ -1,9 +1,6 @@
-# flask
-# flask-cors
-# pillow
-# brother_ql
-# requests
-# python-dateutil
+flask
+python-bitcoinrpc
 grpcio
 googleapis-common-protos
+grpcio-tools
 requests

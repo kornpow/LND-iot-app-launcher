@@ -54,7 +54,13 @@ nohup lnd > /usr/src/app/foo.out 2> /usr/src/app/foo.err < /dev/null &
 
 echo "Completed download, installation, and autostart setup of LND and Bitcoind!"
 
-python3 -m http.server 80 &
+# Install google grpc stuff
+git clone https://github.com/googleapis/googleapis.git
+curl -o rpc.proto -s https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/rpc.proto
+
+python3 -m grpc_tools.protoc --proto_path=googleapis:. --python_out=. --grpc_python_out=. rpc.proto
+
+# python3 -m http.server 80 &
 
 while [[ true ]]; do
 	echo "Node is Up!!";

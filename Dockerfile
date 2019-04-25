@@ -20,10 +20,6 @@ RUN apt-get update && \
 	gpg \
 	rsync \
 	fail2ban \
-	# libjpeg-dev \
-	# libjpeg-turbo8 \
-	# libopenjp2-7 \
-	# libjpeg62 \
 	vim \
 	systemd \
 	sshfs && \
@@ -37,22 +33,25 @@ WORKDIR /usr/src/app
 RUN python3 -m venv env --without-pip
 COPY ./requirements.txt /requirements.txt
 
-# Copy autostart service files
-# COPY ./lnd.service /etc/systemd/system/lnd.service
-# COPY ./bitcoind.service /etc/systemd/system/bitcoind.service
-
+# Enter python environment and install packages 
 RUN /bin/bash -c 'source /usr/src/app/env/bin/activate && pip3 install -r /requirements.txt --only-binary=:all: --python-version 36 --implementation cp --abi cp36m --platform=linux_armv7l --extra-index-url https://www.piwheels.org/simple --target /usr/src/app/env/lib/python3.6/site-packages'
 
+# This should bring you into python environment on boot
 RUN echo "source /usr/src/app/env/bin/activate" >> /etc/bash.bashrc && echo "source /etc/bash.bashrc" >> /etc/profile
 
 ENV VERSION 0.0.1
 COPY start /usr/src/app
 
 COPY code /usr/src/app/code
+
+# Need to make a docker-gen file...
 ARG blockchain_drive_uuid=e265cce8-27f4-4b1a-9af0-5034b140457b
 RUN mkdir /root/bitcoin_data/
+
+# Configure your desired hard drive to mount
 RUN echo "UUID=${blockchain_drive_uuid}  /root/bitcoin_data/      ext4	    defaults,errors=remount-ro 0       1" >> /etc/fstab
-# RUN /usr/src/app/start
+
+RUN git clone https://github.com/googleapis/googleapis.git 
 
 ENV INITSYSTEM on
 CMD ["bash", "start"]
