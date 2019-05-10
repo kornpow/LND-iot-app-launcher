@@ -51,7 +51,5 @@ RUN mkdir /root/bitcoin_data/
 # Configure your desired hard drive to mount
 RUN echo "UUID=${blockchain_drive_uuid}  /root/bitcoin_data/      ext4	    defaults,errors=remount-ro 0       1" >> /etc/fstab
 
-RUN git clone https://github.com/googleapis/googleapis.git 
-
 ENV INITSYSTEM on
 CMD ["bash", "start"]
