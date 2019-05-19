@@ -10,6 +10,9 @@ The goal of this project is to be able to create a Bitcoin Lightning node on Odr
 ## Example Python Projects to Extend Node Functionality
 1. [M-D-Br/FlaskBitcoinDashboard](https://github.com/M-D-Br/FlaskBitcoinDashboard)
 
+## Get THE Bitcoin Blockchain
+1. Start 2:12PM 05/11/2019
+
 ## Initial Installation
 
 1. Install Linux or boot from a Linux usb-key.
@@ -34,5 +37,12 @@ The goal of this project is to be able to create a Bitcoin Lightning node on Odr
 	1. Use the target drive letter here: ```sudo blkid /dev/sda```
 1. Make a fork of this repo, and clone it to your machine.
 	1. Note: You need to fork it since Balena uses a build pattern of adding a new remote and then you push up your image with ```git push balena master```
+
+
+## Aliases
+
+alias "nodroid"="balena ssh {{uuid}}"
+alias "lncli"="lncli --chain=litecoin"
+
 
 Looking for feedback!
