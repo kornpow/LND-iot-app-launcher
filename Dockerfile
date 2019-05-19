@@ -1,7 +1,7 @@
 #Pi3
-#FROM balenalib/raspberrypi3-ubuntu:latest
+FROM balenalib/raspberrypi3-ubuntu:latest
 #Odroid XU4
-FROM balenalib/odroid-xu4-ubuntu
+#FROM balenalib/odroid-xu4-ubuntu
 
 RUN apt-get update && \
     apt-get upgrade -y && \ 	
@@ -45,7 +45,8 @@ COPY start /usr/src/app
 COPY code /usr/src/app/code
 
 # Need to make a docker-gen file...
-ARG blockchain_drive_uuid=e265cce8-27f4-4b1a-9af0-5034b140457b
+ARG blockchain_drive_uuid=f747d97e-b8c0-4209-9f3c-19aca482f73f
+
 RUN mkdir /root/bitcoin_data/
 
 # Configure your desired hard drive to mount
