@@ -48,8 +48,13 @@ The goal of this project is to be able to create a Bitcoin Lightning node on Odr
 
 ## Aliases
 
-alias "nodroid"="balena ssh {{uuid}}"
-alias "lncli"="lncli --chain=litecoin"
+Useful alias' for using the node:
+### User Machine
+This uses the balena cli to ssh to your node from anywhere in the world.
+* alias "nodroid"="balena ssh {{uuid}}"
 
+### Node
+This is a handy alias for using litecoin
+* alias "lncli"="lncli --chain=litecoin"
 
-Looking for feedback!
+This project is still very early, and without much knowledge could be too much for beginners. However when it is completed my hope is this can compete with many of the other node launcher tools, and be one of the easiest ways to start a node. Looking for feedback!
