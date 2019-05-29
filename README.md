@@ -10,8 +10,15 @@ The goal of this project is to be able to create a Bitcoin Lightning node on Odr
 ## Example Python Projects to Extend Node Functionality
 1. [M-D-Br/FlaskBitcoinDashboard](https://github.com/M-D-Br/FlaskBitcoinDashboard)
 
-## Get THE Bitcoin Blockchain
-1. Start 2:12PM 05/11/2019
+## Bill Of Materials
+* Odroid XU4 or Raspberry Pi 3B+
+* MicroSD Card: \~4gb
+* Power Supply
+* 2.5" Hard Drive Enclosure
+* >=500gb SSD
+
+## Get THE Blockchain
+1. Download
 
 ## Initial Installation
 
