@@ -45,12 +45,11 @@ COPY start /usr/src/app
 COPY code /usr/src/app/code
 
 # Need to make a docker-gen file...
-ARG blockchain_drive_uuid=f747d97e-b8c0-4209-9f3c-19aca482f73f
+# *****************************
+# *****************************
 
-RUN mkdir /root/bitcoin_data/
-
-# Configure your desired hard drive to mount
-RUN echo "UUID=${blockchain_drive_uuid}  /root/bitcoin_data/      ext4	    defaults,errors=remount-ro 0       1" >> /etc/fstab
+# *****************************
+# *****************************
 
 ENV INITSYSTEM on
 CMD ["bash", "start"]

@@ -10,12 +10,14 @@ do
 done  
 # echo 
 
-mount -a
-ls /root/bitcoin_data/
 
 
+# *****************************
+# Download and install Bitcoin!
+# *****************************
 # download Bitcoin Core binary and also check out commit on GitHub
 # git clone --branch $BITCOIND_VERSION git@github.com:bitcoin/bitcoin.git --depth 1
+
 
 wget https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/bitcoin-$BITCOIND_VERSION-arm-linux-gnueabihf.tar.gz
 wget https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/SHA256SUMS.asc
@@ -26,11 +28,28 @@ install -m 0755 -o root -g root -t /usr/local/bin bitcoin-$BITCOIND_VERSION/bin/
 
 bitcoind --version
 
+# *****************************
+# Download and install Litecoin!
+# *****************************
+wget https://download.litecoin.org/litecoin-$LITECOIND_VERSION/linux/litecoin-$LITECOIND_VERSION-arm-linux-gnueabihf.tar.gz
+wget https://download.litecoin.org/litecoin-$LITECOIND_VERSION/linux/litecoin-$LITECOIND_VERSION-arm-linux-gnueabihf.tar.gz.asc
+wget https://download.litecoin.org/litecoin-$LITECOIND_VERSION/linux/litecoin-$LITECOIND_VERSION-linux-signatures.asc
+
+tar -xvf litecoin-$LITECOIND_VERSION-arm-linux-gnueabihf.tar.gz
+install -m 0755 -o root -g root -t /usr/local/bin litecoin-$LITECOIND_VERSION/bin/*
+
+litecoind --version
+
+
+
+# *****************************
+# Download and install LND!
+# *****************************
+
 # download LND binary and also check out commit on GitHub
 # git clone --branch $LND_VERSION git@github.com:lightningnetwork/lnd.git --depth 1
 # tar -xzf lnd-linux-armv7-$LND_VERSION.tar.gz
 
-# Just download binaries instead
 wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/lnd-linux-armv7-$LND_VERSION.tar.gz
 wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
 wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt.sig
@@ -39,18 +58,25 @@ wget https://keybase.io/roasbeef/pgp_keys.asc
 tar -xvf lnd-linux-armv7-$LND_VERSION.tar.gz
 install -m 0755 -o root -g root -t /usr/local/bin lnd-linux-armv7-$LND_VERSION/*
 
+lnd --version
+
+# Over-write fstab with the current UUID from Balena Service Variable
+mkdir -p /media/blockchain_data/
+echo "UUID=$BLOCKCHAIN_UUID  /media/blockchain_data/      ext4            defaults,errors=remount-ro 0       1" > /etc/fstab
+mount -a
+ls /media/blockchain_data/
 
 # Link data on drive to standard location used by bitcoind and lnd.
 # Notice no trailing slash on source!
-ln -s /root/bitcoin_data/bitcoin /root/.bitcoin
-ln -s /root/bitcoin_data/lnd /root/.lnd
+ln -s /media/blockchain_data/ltc_lnd/litecoin /root/.litecoin
+ln -s /media/blockchain_data/ltc_lnd/lnd /root/.lnd
 
 # start bitcoin
-bitcoind
+# bitcoind
 echo "Waiting 30 seconds before starting LND"
 sleep 30
 echo "Starting LND!"
-nohup lnd > /usr/src/app/foo.out 2> /usr/src/app/foo.err < /dev/null &
+# nohup lnd > /dev/null 2> /dev/null < /dev/null &
 
 echo "Completed download, installation, and autostart setup of LND and Bitcoind!"
 
