@@ -13,10 +13,14 @@ The goal of this project is to be able to create a Bitcoin Lightning node on Odr
 
 ## Bill Of Materials
 * Odroid XU4 or Raspberry Pi 3B+
-* MicroSD Card: \~4gb
+* MicroSD Card: \~4gb: 
+ * [Digi-Key: MicroSD 4GB AF4GUD3A-OEM](https://www.digikey.com/product-detail/en/atp-electronics-inc/AF4GUD3A-OEM/AF4GUD3A-OEM-ND/)
 * Power Supply
+ * [Amazon: CanaKit 5V Power Supply](https://www.amazon.com/gp/product/B00MARDJZ4/)
 * 2.5" Hard Drive Enclosure
-* >=500gb SSD
+ * [Amazon: Hard Drive Enclosure](https://www.amazon.com/gp/product/B00OJ3UJ2S/)
+* >500gb SSD
+ * [Purse.io/Pay With Crypto: 512GB SSD](https://purse.io/product/B07997QV4Z)
 
 ## Get THE Blockchain
 1. Download
