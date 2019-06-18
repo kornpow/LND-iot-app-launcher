@@ -1,7 +1,7 @@
 #Pi3
-FROM balenalib/raspberrypi3-ubuntu:latest
+#FROM balenalib/raspberrypi3-ubuntu:latest
 #Odroid XU4
-#FROM balenalib/odroid-xu4-ubuntu
+FROM balenalib/odroid-xu4-ubuntu
 
 RUN apt-get update && \
     apt-get upgrade -y && \ 	
