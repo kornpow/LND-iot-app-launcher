@@ -3,8 +3,11 @@ import code
 import codecs, grpc, os
 import json
 
+# mac_path = '/root/.lnd/data/chain/bitcoin/mainnet/admin.macaroon'
+mac_path = '/root/.lnd/data/chain/litecoin/mainnet/admin.macaroon'
 
-macaroon = codecs.encode(open('/root/.lnd/data/chain/bitcoin/mainnet/admin.macaroon', 'rb').read(), 'hex')
+
+macaroon = codecs.encode(open(mac_path, 'rb').read(), 'hex')
 os.environ['GRPC_SSL_CIPHER_SUITES'] = 'HIGH+ECDSA'
 cert = open('/root/.lnd/tls.cert', 'rb').read()
 ssl_creds = grpc.ssl_channel_credentials(cert)
@@ -23,6 +26,11 @@ for chan in response.channels:
    print( "%s\t%s\t%f" % ( chan_partner_alias, chan.remote_pubkey, ( chan.local_balance / ( chan.local_balance+chan.remote_balance ) ) ) )
 
 
+
+request = ln.InvoiceSubscription(
+        add_index=0,
+        settle_index=0,
+    )
 # Query routes for one direction
 request = ln.QueryRoutesRequest(
    pub_key="027ce055380348d7812d2ae7745701c9f93e70c1adeb2657f053f91df4f2843c71",
