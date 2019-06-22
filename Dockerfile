@@ -1,5 +1,6 @@
 #Pi3
-FROM balenalib/raspberrypi3-ubuntu:latest
+#FROM balenalib/raspberrypi3-ubuntu:latest
+FROM balenalib/raspberrypi3-python:3.5-buster
 #Odroid XU4
 #FROM balenalib/odroid-xu4-ubuntu
 
