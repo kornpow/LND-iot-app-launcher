@@ -43,7 +43,7 @@ RUN echo "source /usr/src/app/env/bin/activate" >> /etc/bash.bashrc && echo "sou
 ENV VERSION 0.0.1
 COPY start /usr/src/app
 
-COPY code /usr/src/app/code
+# COPY code /usr/src/app/code
 
 # Need to make a docker-gen file...
 # *****************************
