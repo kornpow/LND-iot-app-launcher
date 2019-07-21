@@ -38,6 +38,9 @@ The goal of this project is to be able to create a Bitcoin or Litecoin Lightning
 
 ## Device Configuration
 1. Navigate to your device visible on the Balena Dashboard. ![Dashboard](https://i.imgur.com/ZubjE8L.png)
+1. Make a fork of this repo, and clone it to your machine.
+	1. Note: You need to fork it since Balena uses a build pattern of adding a new remote and then you push up your image with ```git push balena master```
+1. After you push up your image, it should show up as service 'main' on the device summary page (see screenshot above).
 1. Select the "Device Service Variables" tab, these are environment variables for a given device. 
 1. Create environment variables like in the picture, be sure to use proper names that match the release images. ![Environment](https://i.imgur.com/c4pQVYp.png)
 1. Place your ~>500gb SSD into its enclosure and connect it to your linux machines usb port.
@@ -45,11 +48,6 @@ The goal of this project is to be able to create a Bitcoin or Litecoin Lightning
 1. Obtain the UUID of the drive, this will be used to mount the blockchain and LND data directories stored on this device.
 	1. Use the target drive letter here: ```sudo blkid /dev/sda```
 	1. Save this UUID and the filesystem type, they will need to be entered in the device service variables section.
-1. Make a fork of this repo, and clone it to your machine.
-	1. Note: You need to fork it since Balena uses a build pattern of adding a new remote and then you push up your image with ```git push balena master```
-1. Push your launcher app from your github account to the device.
-    1. ```git push balena master```
-    1. it should show up as service 'main' device summary page (see screenshot above).
 
 
 ## Environment Variables
@@ -76,7 +74,7 @@ Obtain API
 * ```balena login --token="{your_token_from_dashboard}"```
 SSH into device, you can specify a UUID if you want, or it will give a list for you to choose from.
 * ```balena ssh```
-* ```balena ssh [device-uuid] main```  this will log you into the main service where the LND components are run from
+* ```balena ssh [device-uuid] main```  This will log you into the main service where the LND components are run from.
 
 
 ## Aliases
