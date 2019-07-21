@@ -4,7 +4,7 @@ An easy way to spin up a BTC Lightning node on an Odroid or Raspberry Pi 3B+, an
 This project makes heavy use of the [Balena](balena.io) platform for managing fleets of embedded linux devices.
 ![Balena Logo](https://www.balena.io/blog/content/images/2017/10/balena_logo.jpg)
 
-The goal of this project is to be able to create a Bitcoin Lightning node on Odroid devices, in around 24 hours. However, unlike other node projects, this will be a basic installation LND with some small steps to connect Python to the LND gRPC. This install is meant to be basic, so LND developers will have a platform for running a Lightning node and potentially running an app on top. 
+The goal of this project is to be able to create a Bitcoin or Litecoin Lightning node on Odroid devices, in around 24 hours. However, unlike other node projects, this will be a basic installation LND with some small steps to connect Python to the LND gRPC. This install is meant to be basic, so LND developers will have a platform for running a Lightning node and potentially running an app on top. 
 
 ## Bill Of Materials
 * Odroid XU4 or Raspberry Pi 3B+
@@ -38,15 +38,16 @@ The goal of this project is to be able to create a Bitcoin Lightning node on Odr
 
 ## Device Configuration
 1. Navigate to your device visible on the Balena Dashboard. ![Dashboard](https://i.imgur.com/ZubjE8L.png)
+1. Make a fork of this repo, and clone it to your machine.
+	1. Note: You need to fork it since Balena uses a build pattern of adding a new remote and then you push up your image with ```git push balena master```
+1. After you push up your image, it should show up as service 'main' on the device summary page (see screenshot above).
 1. Select the "Device Service Variables" tab, these are environment variables for a given device. 
 1. Create environment variables like in the picture, be sure to use proper names that match the release images. ![Environment](https://i.imgur.com/c4pQVYp.png)
 1. Place your ~>500gb SSD into its enclosure and connect it to your linux machines usb port.
 	1. Use ```ls /dev/sd*``` before and after plugging in the drive, in order to determine which device is the one you plugged in.
 1. Obtain the UUID of the drive, this will be used to mount the blockchain and LND data directories stored on this device.
 	1. Use the target drive letter here: ```sudo blkid /dev/sda```
-	1. Save this UUID for as an environment variaBble
-1. Make a fork of this repo, and clone it to your machine.
-	1. Note: You need to fork it since Balena uses a build pattern of adding a new remote and then you push up your image with ```git push balena master```
+	1. Save this UUID and the filesystem type, they will need to be entered in the device service variables section.
 
 
 ## Environment Variables
@@ -59,7 +60,7 @@ In the Balena dashboard, click "S(x) Device Service Variables". These are global
 * LITECOIND_VERSION (What version of Litecoin software to use)
 	* 0.16.3
 	* 0.17.1 ( Note this version is not compatible with LND 0.6.1)
-* BLOCKCHAIN_UUID (Unique identifier of the parition with the blockchain data)
+* BLOCKCHAIN_UUID and BLOCKCHAIN_FSTYPE (identifier of the SSD partition with the blockchain data)
 	* Follow instructions in Device Configuration section to obtain this!
 * CHAIN (Which blockchain to use) (I dont use this yet, I start the programs manually over ssh)
 	* btc
@@ -73,6 +74,8 @@ Obtain API
 * ```balena login --token="{your_token_from_dashboard}"```
 SSH into device, you can specify a UUID if you want, or it will give a list for you to choose from.
 * ```balena ssh```
+* ```balena ssh [device-uuid] main```  This will log you into the main service where the LND components are run from.
+
 
 ## Aliases
 
