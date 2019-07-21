@@ -1,4 +1,3 @@
-flask
 python-bitcoinrpc
 grpcio
 googleapis-common-protos
