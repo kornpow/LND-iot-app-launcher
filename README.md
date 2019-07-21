@@ -62,7 +62,7 @@ In the Balena dashboard, click "S(x) Device Service Variables". These are global
 * LITECOIND_VERSION (What version of Litecoin software to use)
 	* 0.16.3
 	* 0.17.1 ( Note this version is not compatible with LND 0.6.1)
-* BLOCKCHAIN_UUID (Unique identifier of the parition with the blockchain data)
+* BLOCKCHAIN_UUID and BLOCKCHAIN_FSTYPE (identifier of the SSD partition with the blockchain data)
 	* Follow instructions in Device Configuration section to obtain this!
 * CHAIN (Which blockchain to use) (I dont use this yet, I start the programs manually over ssh)
 	* btc
