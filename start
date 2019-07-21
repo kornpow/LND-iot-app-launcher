@@ -62,12 +62,14 @@ lnd --version
 
 # Over-write fstab with the current UUID from Balena Service Variable
 mkdir -p /media/blockchain_data/
-echo "UUID=$BLOCKCHAIN_UUID  /media/blockchain_data/      ext4            defaults,errors=remount-ro 0       1" > /etc/fstab
+echo "UUID=$BLOCKCHAIN_UUID  /media/blockchain_data/      $BLOCKCHAIN_FSTYPE            defaults,errors=remount-ro 0       1" > /etc/fstab
 mount -a
 ls /media/blockchain_data/
 
 # Link data on drive to standard location used by bitcoind and lnd.
 # Notice no trailing slash on source!
+
+# If statement for bitcoin or litecoin
 ln -s /media/blockchain_data/ltc_lnd/litecoin /root/.litecoin
 ln -s /media/blockchain_data/ltc_lnd/lnd /root/.lnd
 

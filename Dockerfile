@@ -1,5 +1,6 @@
 #Pi3
 #FROM balenalib/raspberrypi3-ubuntu:latest
+FROM balenalib/raspberrypi3-python:3.5-buster
 #Odroid XU4
 FROM balenalib/odroid-xu4-ubuntu
 
@@ -42,7 +43,7 @@ RUN echo "source /usr/src/app/env/bin/activate" >> /etc/bash.bashrc && echo "sou
 ENV VERSION 0.0.1
 COPY start /usr/src/app
 
-COPY code /usr/src/app/code
+# COPY code /usr/src/app/code
 
 # Need to make a docker-gen file...
 # *****************************
