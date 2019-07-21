@@ -1,10 +1,10 @@
 # LND-iot-app-launcher
-An easy way to spin up a BTC Lightning node on an Odroid, and easily portable to other embedded linux platforms.
+An easy way to spin up a BTC Lightning node on an Odroid or Raspberry Pi 3B+, and easily portable to other embedded linux platforms.
 
 This project makes heavy use of the [Balena](balena.io) platform for managing fleets of embedded linux devices.
 ![Balena Logo](https://www.balena.io/blog/content/images/2017/10/balena_logo.jpg)
 
-The goal of this project is to be able to create a Bitcoin Lightning node on Odroid devices, in around 24 hours. However, unlike other node projects, this will be a basic installation LND with some small steps to connect Python to the LND gRPC. This install is meant to be basic, so LND developers will have a platform for running an Lightning node and potentially running an app on top. 
+The goal of this project is to be able to create a Bitcoin Lightning node on Odroid devices, in around 24 hours. However, unlike other node projects, this will be a basic installation LND with some small steps to connect Python to the LND gRPC. This install is meant to be basic, so LND developers will have a platform for running a Lightning node and potentially running an app on top. 
 
 ## Bill Of Materials
 * Odroid XU4 or Raspberry Pi 3B+
@@ -52,7 +52,7 @@ The goal of this project is to be able to create a Bitcoin Lightning node on Odr
 ## Environment Variables
 In the Balena dashboard, click "S(x) Device Service Variables". These are global settings for the container running your node. We'll use it for configuring the software versions and other device specific things. One thing this software could potentially be used for is easily detecting differences in different versions of the blockchain software.
 
-* BITCOIND_VERSION (What version of Bitcoin Core softare to use)
+* BITCOIND_VERSION (What version of Bitcoin Core software to use)
 	* 0.16.3
 	* 0.17.1 (Recommended Version)
 	* 0.18.0 ( Note this version is not compatible with LND 0.6.1)
@@ -93,3 +93,7 @@ This project is still very early, and without much knowledge could be too much f
 
 ### TODO:
 * [RAID 0 Two 256gb flash drives instead of a SSD](https://pchelp.ricmedia.com/build-raspberry-pi3-raid-nas-server/3/)
+
+
+### Useful links for me and maybe for you
+* https://www.admfactory.com/how-to-install-golang-on-raspberry-pi/
