@@ -32,17 +32,17 @@ ln -s /media/blockchain_data/gocode /root/gocode
 # *****************************
 # Download and install golang
 # *****************************
-echo "download & install of golang 12.7"
-wget --directory-prefix=/root/Downloads https://dl.google.com/go/go1.12.7.linux-armv6l.tar.gz
-sha256sum /root/Downloads/go1.12.7.linux-armv6l.tar.gz | awk -F " " '{ print $1 }'
-echo "The final output of the command above should be 48edbe936e9eb74f259bfc4b621fafca4d4ec43156b4ee7bd0d979f257dcd60a"
+#echo "download & install of golang 12.7"
+#wget --directory-prefix=/root/Downloads https://dl.google.com/go/go1.12.7.linux-armv6l.tar.gz
+#sha256sum /root/Downloads/go1.12.7.linux-armv6l.tar.gz | awk -F " " '{ print $1 }'
+#echo "The final output of the command above should be 48edbe936e9eb74f259bfc4b621fafca4d4ec43156b4ee7bd0d979f257dcd60a"
 
-tar -C /usr/local -xzf /root/Downloads/go1.12.7.linux-armv6l.tar.gz
+#tar -C /usr/local -xzf /root/Downloads/go1.12.7.linux-armv6l.tar.gz
 export PATH=$PATH:/usr/local/go/bin
 export GOPATH=/root/gocode
 export PATH=$PATH:$GOPATH/bin
 
-go get -d github.com/ltcsuite/ltcd
+#go get -d github.com/ltcsuite/ltcd
 cd $GOPATH/src/github.com/ltcsuite/ltcd
 GO111MODULE=on go install -v ./...
 
@@ -112,5 +112,6 @@ echo "Completed download, installation, and autostart setup of LND and Bitcoind!
 
 while [[ true ]]; do
 	echo "Node is Up!!";
+    ltcd --version
 	sleep 60;
 done
