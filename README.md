@@ -98,5 +98,5 @@ This project is still very early, and without much knowledge could be too much f
 * [RAID 0 Two 256gb flash drives instead of a SSD](https://pchelp.ricmedia.com/build-raspberry-pi3-raid-nas-server/3/)
 
 
-### Useful links for me and maybe for you
 * https://www.admfactory.com/how-to-install-golang-on-raspberry-pi/
+

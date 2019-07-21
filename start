@@ -11,40 +11,6 @@ done
 # echo 
 
 
-# Over-write fstab with the current UUID from Balena Service Variable
-mkdir -p /media/blockchain_data/
-echo "UUID=$BLOCKCHAIN_UUID  /media/blockchain_data/      $BLOCKCHAIN_FSTYPE            defaults,errors=remount-ro 0       1" > /etc/fstab
-mount -a
-ls /media/blockchain_data/
-
-# Link data on drive to standard location used by bitcoind and lnd.
-# Notice no trailing slash on source!
-
-# If statement for bitcoin or litecoin
-ln -s /media/blockchain_data/.ltcd /root/.ltcd
-ln -s /media/blockchain_data/Downloads /root/Downloads
-ln -s /media/blockchain_data/gocode /root/gocode
-#ln -s /media/blockchain_data/ltc_lnd/litecoin /root/.litecoin
-#ln -s /media/blockchain_data/ltc_lnd/lnd /root/.lnd
-
-
-
-# *****************************
-# Download and install golang
-# *****************************
-#echo "download & install of golang 12.7"
-#wget --directory-prefix=/root/Downloads https://dl.google.com/go/go1.12.7.linux-armv6l.tar.gz
-#sha256sum /root/Downloads/go1.12.7.linux-armv6l.tar.gz | awk -F " " '{ print $1 }'
-#echo "The final output of the command above should be 48edbe936e9eb74f259bfc4b621fafca4d4ec43156b4ee7bd0d979f257dcd60a"
-
-#tar -C /usr/local -xzf /root/Downloads/go1.12.7.linux-armv6l.tar.gz
-export PATH=$PATH:/usr/local/go/bin
-export GOPATH=/root/gocode
-export PATH=$PATH:$GOPATH/bin
-
-#go get -d github.com/ltcsuite/ltcd
-cd $GOPATH/src/github.com/ltcsuite/ltcd
-GO111MODULE=on go install -v ./...
 
 # *****************************
 # Download and install Bitcoin!
@@ -53,26 +19,26 @@ GO111MODULE=on go install -v ./...
 # git clone --branch $BITCOIND_VERSION git@github.com:bitcoin/bitcoin.git --depth 1
 
 
-#wget https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/bitcoin-$BITCOIND_VERSION-arm-linux-gnueabihf.tar.gz
-#wget https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/SHA256SUMS.asc
-#wget https://bitcoin.org/laanwj-releases.asc
+wget https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/bitcoin-$BITCOIND_VERSION-arm-linux-gnueabihf.tar.gz
+wget https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/SHA256SUMS.asc
+wget https://bitcoin.org/laanwj-releases.asc
 
-#tar -xvf bitcoin-$BITCOIND_VERSION-arm-linux-gnueabihf.tar.gz
-#install -m 0755 -o root -g root -t /usr/local/bin bitcoin-$BITCOIND_VERSION/bin/*
+tar -xvf bitcoin-$BITCOIND_VERSION-arm-linux-gnueabihf.tar.gz
+install -m 0755 -o root -g root -t /usr/local/bin bitcoin-$BITCOIND_VERSION/bin/*
 
-#bitcoind --version
+bitcoind --version
 
 # *****************************
 # Download and install Litecoin!
 # *****************************
-#wget https://download.litecoin.org/litecoin-$LITECOIND_VERSION/linux/litecoin-$LITECOIND_VERSION-arm-linux-gnueabihf.tar.gz
-#wget https://download.litecoin.org/litecoin-$LITECOIND_VERSION/linux/litecoin-$LITECOIND_VERSION-arm-linux-gnueabihf.tar.gz.asc
-#wget https://download.litecoin.org/litecoin-$LITECOIND_VERSION/linux/litecoin-$LITECOIND_VERSION-linux-signatures.asc
+wget https://download.litecoin.org/litecoin-$LITECOIND_VERSION/linux/litecoin-$LITECOIND_VERSION-arm-linux-gnueabihf.tar.gz
+wget https://download.litecoin.org/litecoin-$LITECOIND_VERSION/linux/litecoin-$LITECOIND_VERSION-arm-linux-gnueabihf.tar.gz.asc
+wget https://download.litecoin.org/litecoin-$LITECOIND_VERSION/linux/litecoin-$LITECOIND_VERSION-linux-signatures.asc
 
-#tar -xvf litecoin-$LITECOIND_VERSION-arm-linux-gnueabihf.tar.gz
-#install -m 0755 -o root -g root -t /usr/local/bin litecoin-$LITECOIND_VERSION/bin/*
+tar -xvf litecoin-$LITECOIND_VERSION-arm-linux-gnueabihf.tar.gz
+install -m 0755 -o root -g root -t /usr/local/bin litecoin-$LITECOIND_VERSION/bin/*
 
-#litecoind --version
+litecoind --version
 
 
 
@@ -84,34 +50,46 @@ GO111MODULE=on go install -v ./...
 # git clone --branch $LND_VERSION git@github.com:lightningnetwork/lnd.git --depth 1
 # tar -xzf lnd-linux-armv7-$LND_VERSION.tar.gz
 
-#wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/lnd-linux-armv7-$LND_VERSION.tar.gz
-#wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
-#wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt.sig
-#wget https://keybase.io/roasbeef/pgp_keys.asc
+wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/lnd-linux-armv7-$LND_VERSION.tar.gz
+wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
+wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt.sig
+wget https://keybase.io/roasbeef/pgp_keys.asc
 
-#tar -xvf lnd-linux-armv7-$LND_VERSION.tar.gz
-#install -m 0755 -o root -g root -t /usr/local/bin lnd-linux-armv7-$LND_VERSION/*
+tar -xvf lnd-linux-armv7-$LND_VERSION.tar.gz
+install -m 0755 -o root -g root -t /usr/local/bin lnd-linux-armv7-$LND_VERSION/*
 
-#lnd --version
+lnd --version
+
+# Over-write fstab with the current UUID from Balena Service Variable
+mkdir -p /media/blockchain_data/
+echo "UUID=$BLOCKCHAIN_UUID  /media/blockchain_data/      $BLOCKCHAIN_FSTYPE            defaults,errors=remount-ro 0       1" > /etc/fstab
+mount -a
+ls /media/blockchain_data/
+
+# Link data on drive to standard location used by bitcoind and lnd.
+# Notice no trailing slash on source!
+
+# If statement for bitcoin or litecoin
+ln -s /media/blockchain_data/ltc_lnd/litecoin /root/.litecoin
+ln -s /media/blockchain_data/ltc_lnd/lnd /root/.lnd
 
 # start bitcoin
 # bitcoind
-#echo "Waiting 30 seconds before starting LND"
-#sleep 30
-#echo "Starting LND!"
+echo "Waiting 30 seconds before starting LND"
+sleep 30
+echo "Starting LND!"
 # nohup lnd > /dev/null 2> /dev/null < /dev/null &
 
 echo "Completed download, installation, and autostart setup of LND and Bitcoind!"
 
 # Install google grpc stuff
-#git clone https://github.com/googleapis/googleapis.git
-#mkdir rpc
-#curl -o rpc/rpc.proto -s https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/rpc.proto
-#python -m grpc_tools.protoc --proto_path=googleapis:. --python_out=. --grpc_python_out=. rpc/rpc.proto
+git clone https://github.com/googleapis/googleapis.git
+mkdir rpc
+curl -o rpc/rpc.proto -s https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/rpc.proto
+python -m grpc_tools.protoc --proto_path=googleapis:. --python_out=. --grpc_python_out=. rpc/rpc.proto
 # python3 -m http.server 80 &
 
 while [[ true ]]; do
 	echo "Node is Up!!";
-    ltcd --version
-	sleep 60;
+	sleep 5;
 done
