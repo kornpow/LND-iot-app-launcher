@@ -57,4 +57,5 @@ COPY start /usr/src/app
 # *****************************
 
 ENV INITSYSTEM on
-CMD ["bash", "start"]
+#CMD ["bash", "start"]
+ENTRYPOINT exec start
