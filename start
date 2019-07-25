@@ -80,7 +80,7 @@ tail -n 50 /root/.lnd/logs/litecoin/testnet/lnd.log
 #lncli --chain litecoin -network testnet stop
 # JMC note: odroid on chain address = tltc1qr2zr624jnkrrmapn5gxjvmr2fkut4ncncmj2vc
 
-
+trap exit_script SIGINT SIGTERM
 
 echo "Completed download, installation, and autostart setup of LTCD and LND!"
 
