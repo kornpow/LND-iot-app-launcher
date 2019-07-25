@@ -1,4 +1,13 @@
 #!/bin/bash
+
+exit_script() {
+    echo "received SIGTERM, need to shut down LND and LTCD!"
+    trap - SIGINT SIGTERM # clear the trap
+    ltcctl -u Wowee0 -P litecoin -s 192.168.0.107:19334 stop
+    lncli --chain litecoin -network testnet stop
+    kill -- -$$ # Sends SIGTERM to child/sub processes
+}
+
 echo "Starting Lightning Node!"
 source /usr/src/app/env/bin/activate
 
@@ -26,9 +35,6 @@ ln -s /media/blockchain_data/.lnd /root/.lnd
 ln -s /media/blockchain_data/Downloads /root/Downloads
 ln -s /media/blockchain_data/gocode /root/gocode
 ln -s /media/blockchain_data/go /root/go
-#ln -s /media/blockchain_data/ltc_lnd/litecoin /root/.litecoin
-#ln -s /media/blockchain_data/ltc_lnd/lnd /root/.lnd
-
 
 
 # *****************************
@@ -45,102 +51,39 @@ export PATH=$PATH:$GOPATH/bin
 
 # build ltcd
 #go get -d github.com/ltcsuite/ltcd
-cd $GOPATH/src/github.com/ltcsuite/ltcd
-GO111MODULE=on go install -v ./...
+#cd $GOPATH/src/github.com/ltcsuite/ltcd
+#GO111MODULE=on go install -v ./...
 nohup ltcd > /dev/null 2> /dev/null < /dev/null &
-echo "waiting 60s for ltcd to start up...";
-sleep 60;
+echo "waiting for ltcd to start up...";
+sleep 10;
 tail -n 50 /root/.ltcd/logs/testnet/ltcd.log
 
 # to control LTCD, use ltcctl, like this:
-# ltcctl -u rpcuser -P rpcpass -s 127.0.0.1:19334 stop
+# ltcctl -u Wowee0 -P litecoin -s 192.168.0.107:19334 stop
 
 
 # build neutrino & lnd
-cd $GOPATH/src/litecoin-dev/neutrino-ltc
-GO111MODULE=on go install -v ./...
-cd $GOPATH/src/litecoin-dev/lnd
-GO111MODULE=on go install -v ./...
+#cd $GOPATH/src/litecoin-dev/neutrino-ltc
+#GO111MODULE=on go install -v ./...
+#cd $GOPATH/src/litecoin-dev/lnd
+#GO111MODULE=on go install -v ./...
 # remove the old neutrino database, it will download it fresh from ltcd
 # this should not be necessary, but for now it gets us around a problem
-rm /root/.lnd/data/chain/litecoin/testnet/*.bin
-rm /root/.lnd/data/chain/litecoin/testnet/neutrino.db
+#rm /root/.lnd/data/chain/litecoin/testnet/*.bin
+#rm /root/.lnd/data/chain/litecoin/testnet/neutrino.db
 nohup lnd > /dev/null 2> /dev/null < /dev/null &
-echo "waiting 60s for ltcd to start up...";
-sleep 60;
+echo "waiting for lnd to start up...";
+sleep 6;
 tail -n 50 /root/.lnd/logs/litecoin/testnet/lnd.log
 
 # to control LND, use lncli, like this:
 #lncli --chain litecoin -network testnet stop
+# JMC note: odroid on chain address = tltc1qr2zr624jnkrrmapn5gxjvmr2fkut4ncncmj2vc
 
 
-
-# *****************************
-# Download and install Bitcoin!
-# *****************************
-# download Bitcoin Core binary and also check out commit on GitHub
-# git clone --branch $BITCOIND_VERSION git@github.com:bitcoin/bitcoin.git --depth 1
-
-
-#wget https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/bitcoin-$BITCOIND_VERSION-arm-linux-gnueabihf.tar.gz
-#wget https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/SHA256SUMS.asc
-#wget https://bitcoin.org/laanwj-releases.asc
-
-#tar -xvf bitcoin-$BITCOIND_VERSION-arm-linux-gnueabihf.tar.gz
-#install -m 0755 -o root -g root -t /usr/local/bin bitcoin-$BITCOIND_VERSION/bin/*
-
-#bitcoind --version
-
-# *****************************
-# Download and install Litecoin!
-# *****************************
-#wget https://download.litecoin.org/litecoin-$LITECOIND_VERSION/linux/litecoin-$LITECOIND_VERSION-arm-linux-gnueabihf.tar.gz
-#wget https://download.litecoin.org/litecoin-$LITECOIND_VERSION/linux/litecoin-$LITECOIND_VERSION-arm-linux-gnueabihf.tar.gz.asc
-#wget https://download.litecoin.org/litecoin-$LITECOIND_VERSION/linux/litecoin-$LITECOIND_VERSION-linux-signatures.asc
-
-#tar -xvf litecoin-$LITECOIND_VERSION-arm-linux-gnueabihf.tar.gz
-#install -m 0755 -o root -g root -t /usr/local/bin litecoin-$LITECOIND_VERSION/bin/*
-
-#litecoind --version
-
-
-
-# *****************************
-# Download and install LND!
-# *****************************
-
-# download LND binary and also check out commit on GitHub
-# git clone --branch $LND_VERSION git@github.com:lightningnetwork/lnd.git --depth 1
-# tar -xzf lnd-linux-armv7-$LND_VERSION.tar.gz
-
-#wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/lnd-linux-armv7-$LND_VERSION.tar.gz
-#wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
-#wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt.sig
-#wget https://keybase.io/roasbeef/pgp_keys.asc
-
-#tar -xvf lnd-linux-armv7-$LND_VERSION.tar.gz
-#install -m 0755 -o root -g root -t /usr/local/bin lnd-linux-armv7-$LND_VERSION/*
-
-#lnd --version
-
-# start bitcoin
-# bitcoind
-#echo "Waiting 30 seconds before starting LND"
-#sleep 30
-#echo "Starting LND!"
-# nohup lnd > /dev/null 2> /dev/null < /dev/null &
 
 echo "Completed download, installation, and autostart setup of LTCD and LND!"
 
-# Install google grpc stuff
-#git clone https://github.com/googleapis/googleapis.git
-#mkdir rpc
-#curl -o rpc/rpc.proto -s https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/rpc.proto
-#python -m grpc_tools.protoc --proto_path=googleapis:. --python_out=. --grpc_python_out=. rpc/rpc.proto
-# python3 -m http.server 80 &
-
 while [[ true ]]; do
-	echo "Node is Up!!";
-	ps -ef
-	sleep 60;
+	sleep 1;
 done
