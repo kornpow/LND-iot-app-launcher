@@ -1,4 +1,11 @@
 #!/bin/bash
+
+exit_script() {
+    echo "received SIGTERM, need to shut down LND and LTCD!"
+    trap - SIGINT SIGTERM # clear the trap
+    kill -- -$$ # Sends SIGTERM to child/sub processes
+}
+
 echo "Starting Lightning Node!"
 source /usr/src/app/env/bin/activate
 
@@ -79,6 +86,8 @@ echo "Waiting 30 seconds before starting LND"
 sleep 30
 echo "Starting LND!"
 # nohup lnd > /dev/null 2> /dev/null < /dev/null &
+
+trap exit_script SIGINT SIGTERM
 
 echo "Completed download, installation, and autostart setup of LND and Bitcoind!"
 
