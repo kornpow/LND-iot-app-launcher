@@ -58,4 +58,4 @@ COPY start /usr/src/app
 
 ENV INITSYSTEM on
 #CMD ["bash", "start"]
-ENTRYPOINT exec /usr/src/app/start
+ENTRYPOINT exec /usr/src/app/start_wowee

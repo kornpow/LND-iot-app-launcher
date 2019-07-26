@@ -1,0 +1,102 @@
+#!/bin/bash
+
+exit_script() {
+    echo "received SIGTERM, need to shut down LND and LTCD!"
+    trap - SIGINT SIGTERM # clear the trap
+    #ltcctl -u Wowee0 -P litecoin -s 192.168.0.107:19334 stop
+    #lncli --chain litecoin -network testnet stop
+    kill -- -$$ # Sends SIGTERM to child/sub processes
+}
+
+echo "Starting Lightning Node!"
+source /usr/src/app/env/bin/activate
+
+for i in `seq 1 10`;
+do
+        echo $i;
+        sleep 0.25;
+	python3 --version
+done  
+# echo 
+
+
+# Over-write fstab with the current UUID from Balena Service Variable
+mkdir -p /media/blockchain_data/
+echo "UUID=$BLOCKCHAIN_UUID  /media/blockchain_data/      $BLOCKCHAIN_FSTYPE            defaults,errors=remount-ro 0       1" > /etc/fstab
+mount -a
+ls /media/blockchain_data/
+
+# Link data on drive to standard location used by bitcoind and lnd.
+# Notice no trailing slash on source!
+
+# If statement for bitcoin or litecoin
+ln -s /media/blockchain_data/.ltcd /root/.ltcd
+ln -s /media/blockchain_data/.lnd /root/.lnd
+ln -s /media/blockchain_data/Downloads /root/Downloads
+ln -s /media/blockchain_data/gocode /root/gocode
+ln -s /media/blockchain_data/go /root/go
+
+
+export PATH=$PATH:/root/go/bin
+export GOPATH=/root/gocode
+export PATH=$PATH:$GOPATH/bin
+
+# *****************************
+# Download and install golang ... only need to do this one time
+# *****************************
+if [ ! -f /root/go/VERSION ]; then
+    echo "golang not found, installing!"
+    echo "download & install of golang 12.7"
+    wget --directory-prefix=/root/Downloads https://dl.google.com/go/go1.12.7.linux-armv6l.tar.gz
+    sha256sum /root/Downloads/go1.12.7.linux-armv6l.tar.gz | awk -F " " '{ print $1 }'
+    echo "The final output of the command above should be 48edbe936e9eb74f259bfc4b621fafca4d4ec43156b4ee7bd0d979f257dcd60a"
+    tar -C /root/go -xzf /root/Downloads/go1.12.7.linux-armv6l.tar.gz
+    go version
+fi
+
+# download & build ltcd & lnd
+if [ ! -f $GOPATH/src/github.com/Wowee0 ]; then
+    go get -d github.com/Wowee0/ltcd
+    go get -d github.com/Wowee0/ltcutil
+    go get -d github.com/Wowee0/ltcwallet
+    go get -d github.com/Wowee0/lnd
+    go get -d github.com/Wowee0/neutrino
+
+    cd $GOPATH/src/github.com/Wowee0/ltcwallet
+    GO111MODULE=on go install -v ./...
+    cd $GOPATH/src/github.com/Wowee0/ltcutil
+    GO111MODULE=on go install -v ./...
+    cd $GOPATH/src/github.com/Wowee0/ltcd
+    GO111MODULE=on go install -v ./...
+    cd $GOPATH/src/github.com/Wowee0/neutrino
+    GO111MODULE=on go install -v ./...
+    cd $GOPATH/src/github.com/Wowee0/lnd
+    GO111MODULE=on go install -v ./...
+    ltcd --version
+    lnd --version
+    sleep 5
+fi
+
+nohup ltcd > /dev/null 2> /dev/null < /dev/null &
+echo "waiting for ltcd to start up...";
+sleep 10;
+tail -n 50 /root/.ltcd/logs/testnet/ltcd.log
+
+nohup lnd > /dev/null 2> /dev/null < /dev/null &
+echo "waiting for lnd to start up...";
+sleep 6;
+tail -n 50 /root/.lnd/logs/litecoin/testnet/lnd.log
+
+# to control LTCD, use ltcctl, like this:
+# ltcctl -u Wowee0 -P litecoin -s 192.168.0.107:19334 stop
+# to control LND, use lncli, like this:
+#lncli --chain litecoin -network testnet stop
+# JMC note: odroid on chain address = tltc1qr2zr624jnkrrmapn5gxjvmr2fkut4ncncmj2vc
+
+trap exit_script SIGINT SIGTERM
+
+echo "Completed download, installation, and autostart setup of LTCD and LND!"
+
+while [[ true ]]; do
+	sleep 1;
+done
