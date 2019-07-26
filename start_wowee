@@ -30,11 +30,11 @@ ls /media/blockchain_data/
 # Notice no trailing slash on source!
 
 # If statement for bitcoin or litecoin
-ln -s /media/blockchain_data/.ltcd /root/.ltcd
-ln -s /media/blockchain_data/.lnd /root/.lnd
-ln -s /media/blockchain_data/Downloads /root/Downloads
-ln -s /media/blockchain_data/gocode /root/gocode
-ln -s /media/blockchain_data/go /root/go
+if [ ! -d /root/.ltcd ]; then ln -s /media/blockchain_data/.ltcd /root/.ltcd; fi
+if [ ! -d /root/.lnd ]; then ln -s /media/blockchain_data/.lnd /root/.lnd; fi
+if [ ! -d /root/Downloads ]; then ln -s /media/blockchain_data/Downloads /root/Downloads; fi
+if [ ! -d /root/gocode ]; then ln -s /media/blockchain_data/gocode /root/gocode; fi
+if [ ! -d /root/go ]; then ln -s /media/blockchain_data/go /root/go; fi
 
 
 export PATH=$PATH:/root/go/bin
@@ -55,7 +55,7 @@ if [ ! -f /root/go/VERSION ]; then
 fi
 
 # download & build ltcd & lnd
-if [ ! -f $GOPATH/src/github.com/Wowee0 ]; then
+if [ ! -f $GOPATH/bin/lnd ]; then
     go get -d github.com/Wowee0/ltcd
     go get -d github.com/Wowee0/ltcutil
     go get -d github.com/Wowee0/ltcwallet
