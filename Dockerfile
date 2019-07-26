@@ -45,7 +45,7 @@ RUN /bin/bash -c 'source /usr/src/app/env/bin/activate && pip3 install -r /requi
 RUN echo "source /usr/src/app/env/bin/activate" >> /etc/bash.bashrc && echo "source /etc/bash.bashrc" >> /etc/profile
 
 ENV VERSION 0.0.1
-COPY start /usr/src/app
+COPY start_wowee /usr/src/app
 
 # COPY code /usr/src/app/code
 
