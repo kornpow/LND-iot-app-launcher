@@ -77,8 +77,15 @@ ls /media/blockchain_data/
 # Notice no trailing slash on source!
 
 # If statement for bitcoin or litecoin
-ln -s /media/blockchain_data/ltc_lnd/litecoin /root/.litecoin
-ln -s /media/blockchain_data/ltc_lnd/lnd /root/.lnd
+if [ $ACTIVE_CHAIN = "BITCOIN" ]; then
+	ln -s /media/blockchain_data/btc_lnd/bitcoin /root/.bitcoin
+	ln -s /media/blockchain_data/btc_lnd/lnd /root/.lnd
+	alias "lncli"="lncli --chain=bitcoin"
+elif [ $ACTIVE_CHAIN = "LITECOIN" ]; then
+	ln -s /media/blockchain_data/ltc_lnd/litecoin /root/.litecoin
+	ln -s /media/blockchain_data/ltc_lnd/lnd /root/.lnd
+	alias "lncli"="lncli --chain=litecoin"
+fi
 
 # start bitcoin
 # bitcoind
@@ -92,13 +99,15 @@ trap exit_script SIGINT SIGTERM
 echo "Completed download, installation, and autostart setup of LND and Bitcoind!"
 
 # Install google grpc stuff
-git clone https://github.com/googleapis/googleapis.git
-mkdir rpc
-curl -o rpc/rpc.proto -s https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/rpc.proto
-python -m grpc_tools.protoc --proto_path=googleapis:. --python_out=. --grpc_python_out=. rpc/rpc.proto
+# Don't Download this quite yet, in the future maybe
+# git clone https://github.com/googleapis/googleapis.git
+# mkdir rpc
+# curl -o rpc/rpc.proto -s https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/rpc.proto
+# python -m grpc_tools.protoc --proto_path=googleapis:. --python_out=. --grpc_python_out=. rpc/rpc.proto
 # python3 -m http.server 80 &
 
+# Some kind of infinite loop is required here:
 while [[ true ]]; do
-	echo "Node is Up!!";
-	sleep 5;
+	echo "$ACTIVE_CHAIN Lightning Node is UP for $SECONDS seconds!"
+	sleep 5
 done

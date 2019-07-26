@@ -53,6 +53,9 @@ The goal of this project is to be able to create a Bitcoin or Litecoin Lightning
 ## Environment Variables
 In the Balena dashboard, click "S(x) Device Service Variables". These are global settings for the container running your node. We'll use it for configuring the software versions and other device specific things. One thing this software could potentially be used for is easily detecting differences in different versions of the blockchain software.
 
+* ACTIVE_CHAIN (Choose Between Bitcoin and Litecoin)
+	* BITCOIN
+	* LITECOIN
 * BITCOIND_VERSION (What version of Bitcoin Core software to use)
 	* 0.16.3
 	* 0.17.1 (Recommended Version)
@@ -60,11 +63,15 @@ In the Balena dashboard, click "S(x) Device Service Variables". These are global
 * LITECOIND_VERSION (What version of Litecoin software to use)
 	* 0.16.3
 	* 0.17.1 ( Note this version is not compatible with LND 0.6.1)
-* BLOCKCHAIN_UUID and BLOCKCHAIN_FSTYPE (identifier of the SSD partition with the blockchain data)
+* LND_VERSION ( Which Version of LND to use! )
+	* v0.7.1-beta-rc2
+	* v0.7.0-beta
+	* Choose from options here: [LND Releases](https://github.com/lightningnetwork/lnd/releases)
+* BLOCKCHAIN_UUID (identifier of the SSD partition with the blockchain data)
 	* Follow instructions in Device Configuration section to obtain this!
-* CHAIN (Which blockchain to use) (I dont use this yet, I start the programs manually over ssh)
-	* btc
-	* ltc
+* BLOCKCHAIN_FSTYPE ( File System Type )
+	* ext4
+	* vfat
 
 ## Balena Commands
 Balena has a CLI that we will use mostly for accessing our IoT lightning nodes from anywhere with Internet. Balena's vpn capability is very useful, as it eliminates the need for port forwarding for accessing devices over SSH.
