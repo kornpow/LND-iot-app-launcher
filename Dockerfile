@@ -47,8 +47,7 @@ RUN echo "source /usr/src/app/env/bin/activate" >> /etc/bash.bashrc && echo "sou
 # Install go
 # echo "golang not found, installing!"
 # echo "download & install of golang 12.7"
-RUN /bin/bash -c "
-	wget https://dl.google.com/go/go1.12.7.linux-armv6l.tar.gz \
+RUN /bin/bash -c "wget https://dl.google.com/go/go1.12.7.linux-armv6l.tar.gz \
     sha256sum go1.12.7.linux-armv6l.tar.gz | awk -F " " '{ print $1 }' \
     echo "The final output of the command above should be 48edbe936e9eb74f259bfc4b621fafca4d4ec43156b4ee7bd0d979f257dcd60a" \
     mkdir -p /root/go \
