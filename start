@@ -18,6 +18,12 @@ done
 # echo 
 
 
+export PATH=$PATH:/root/go/bin
+export GOPATH=/root/gocode
+export PATH=$PATH:$GOPATH/bin
+
+#source /etc/profile
+
 
 # *****************************
 # Download and install Bitcoin!
