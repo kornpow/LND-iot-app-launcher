@@ -51,8 +51,7 @@ RUN echo "source /usr/src/app/env/bin/activate" >> /etc/bash.bashrc && echo "sou
 # echo "The final output of the command above should be 48edbe936e9eb74f259bfc4b621fafca4d4ec43156b4ee7bd0d979f257dcd60a" \
 RUN wget https://dl.google.com/go/go1.12.7.linux-armv6l.tar.gz && \
     mkdir -p /root/go && \
-    tar -C /root/go -xzf go1.12.7.linux-armv6l.tar.gz && \
-    go version
+    tar -C /root/go -xzf go1.12.7.linux-armv6l.tar.gz
 
 ENV VERSION 0.0.1
 
