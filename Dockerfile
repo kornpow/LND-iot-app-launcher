@@ -21,7 +21,7 @@ RUN apt-get update && \
 	nginx \
 	supervisor \
 	nano \
-	# sha256sum \
+	sha256sum \
 	gpg \
 	rsync \
 	fail2ban \
