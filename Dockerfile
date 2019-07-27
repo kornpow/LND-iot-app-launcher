@@ -52,6 +52,7 @@ RUN echo "source /usr/src/app/env/bin/activate" >> /etc/bash.bashrc && echo "sou
 RUN wget https://dl.google.com/go/go1.12.7.linux-armv6l.tar.gz && \
     tar -xzf go1.12.7.linux-armv6l.tar.gz -C /root
 
+RUN echo "export PATH=$PATH:/root/go/bin\nexport GOPATH=/root/gocode\nexport PATH=$PATH:$GOPATH/bin" >> /etc/bash.bashrc
 ENV VERSION 0.0.1
 
 # Copy the startup script to the image
