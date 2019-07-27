@@ -44,10 +44,23 @@ RUN /bin/bash -c 'source /usr/src/app/env/bin/activate && pip3 install -r /requi
 # This should bring you into python environment on boot
 RUN echo "source /usr/src/app/env/bin/activate" >> /etc/bash.bashrc && echo "source /etc/bash.bashrc" >> /etc/profile
 
+# Install go
+# echo "golang not found, installing!"
+# echo "download & install of golang 12.7"
+RUN wget --directory-prefix=/root/Downloads https://dl.google.com/go/go1.12.7.linux-armv6l.tar.gz \
+    sha256sum /root/Downloads/go1.12.7.linux-armv6l.tar.gz | awk -F " " '{ print $1 }' \
+    echo "The final output of the command above should be 48edbe936e9eb74f259bfc4b621fafca4d4ec43156b4ee7bd0d979f257dcd60a" \
+    tar -C /root/go -xzf /root/Downloads/go1.12.7.linux-armv6l.tar.gz \
+    go version
+
 ENV VERSION 0.0.1
+
+# Copy the startup script to the image
 COPY start /usr/src/app
 
 # COPY code /usr/src/app/code
+
+
 
 # Need to make a docker-gen file...
 # *****************************
