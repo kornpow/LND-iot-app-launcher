@@ -24,7 +24,7 @@ Using the ZAP wallet is a lot easier than ```lncli```
 
     ```go get github.com/LN-Zap/lndconnect```
 
-    ```cd gocode/src/github.com/LN-Zap/lndconnect/```
+    ```cd $GOPATH/src/github.com/LN-Zap/lndconnect/```
 
     ```go build```
 
