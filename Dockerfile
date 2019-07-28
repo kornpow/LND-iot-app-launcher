@@ -3,10 +3,9 @@
 # LEARN MORE ABOUT BASE IMAGES AND SUPPORTED PLATFORMS HERE:
 # https://www.balena.io/docs/reference/base-images/base-images/
 #Pi3
-#FROM balenalib/raspberrypi3-ubuntu:latest
-#FROM balenalib/raspberrypi3-python:3.5-buster
+FROM balenalib/raspberrypi3-ubuntu:latest
 #Odroid XU4
-FROM balenalib/odroid-xu4-ubuntu
+#FROM balenalib/odroid-xu4-ubuntu
 
 RUN apt-get update && \
     apt-get upgrade -y && \ 	
