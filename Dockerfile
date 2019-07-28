@@ -54,9 +54,13 @@ RUN wget https://dl.google.com/go/go1.12.7.linux-armv6l.tar.gz && \
 
 RUN echo "export PATH=$PATH:/root/go/bin\nexport GOPATH=/root/gocode\nexport PATH=$PATH:$GOPATH/bin" >> /etc/bash.bashrc
 ENV VERSION 0.0.1
+<<<<<<< HEAD
 
 # Copy the startup script to the image
 COPY start /usr/src/app
+=======
+COPY start_wowee /usr/src/app
+>>>>>>> wowee/master
 
 # COPY code /usr/src/app/code
 
@@ -71,4 +75,8 @@ COPY start /usr/src/app
 
 ENV INITSYSTEM on
 #CMD ["bash", "start"]
+<<<<<<< HEAD
 ENTRYPOINT exec /usr/src/app/start
+=======
+ENTRYPOINT exec /usr/src/app/start_wowee
+>>>>>>> wowee/master

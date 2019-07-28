@@ -17,7 +17,6 @@ do
 done  
 # echo 
 
-
 export PATH=$PATH:/root/go/bin
 export GOPATH=/root/gocode
 export PATH=$PATH:$GOPATH/bin
@@ -25,8 +24,6 @@ export PATH=$PATH:$GOPATH/bin
 go version
 
 #source /etc/profile
-
-
 
 # *****************************
 # Download and install Bitcoin!
@@ -96,17 +93,32 @@ elif [ "$ACTIVE_CHAIN" = "LITECOIN" ]; then
 	alias "lncli"="lncli --chain=litecoin"
 fi
 
-# start bitcoin
-# bitcoind
-echo "Waiting 30 seconds before starting LND"
-sleep 30
-echo "Starting LND!"
-# nohup lnd > /dev/null 2> /dev/null < /dev/null &
+ln -s /media/blockchain_data/.ltcd /root/.ltcd
+ln -s /media/blockchain_data/.lnd /root/.lnd
+ln -s /media/blockchain_data/Downloads /root/Downloads
+ln -s /media/blockchain_data/gocode /root/gocode
+ln -s /media/blockchain_data/go /root/go
 
 trap exit_script SIGINT SIGTERM
 
 echo "Completed download, installation, and autostart setup of LND and Bitcoind!"
 
+
+export PATH=$PATH:/root/go/bin
+export GOPATH=/root/gocode
+export PATH=$PATH:$GOPATH/bin
+
+trap exit_script SIGINT SIGTERM
+
+echo "Completed download, installation, and autostart setup of LTCD and LND!"
+
+# Some kind of infinite loop is required here:
+while [[ true ]]; do
+	echo "$ACTIVE_CHAIN Lightning Node is UP for $SECONDS seconds!"
+	sleep 5
+done
+
+# TODO: LATER
 # Install google grpc stuff
 # Don't Download this quite yet, in the future maybe
 # git clone https://github.com/googleapis/googleapis.git
@@ -114,9 +126,3 @@ echo "Completed download, installation, and autostart setup of LND and Bitcoind!
 # curl -o rpc/rpc.proto -s https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/rpc.proto
 # python -m grpc_tools.protoc --proto_path=googleapis:. --python_out=. --grpc_python_out=. rpc/rpc.proto
 # python3 -m http.server 80 &
-
-# Some kind of infinite loop is required here:
-while [[ true ]]; do
-	echo "$ACTIVE_CHAIN Lightning Node is UP for $SECONDS seconds!"
-	sleep 5
-done
