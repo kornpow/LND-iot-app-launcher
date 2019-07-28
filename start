@@ -22,7 +22,10 @@ export PATH=$PATH:/root/go/bin
 export GOPATH=/root/gocode
 export PATH=$PATH:$GOPATH/bin
 
+go version
+
 #source /etc/profile
+
 
 
 # *****************************
