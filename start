@@ -86,11 +86,11 @@ ls /media/blockchain_data/
 # Notice no trailing slash on source!
 
 # If statement for bitcoin or litecoin
-if [ $ACTIVE_CHAIN = "BITCOIN" ]; then
+if [ "$ACTIVE_CHAIN"="BITCOIN" ]; then
 	ln -s /media/blockchain_data/btc_lnd/bitcoin /root/.bitcoin
 	ln -s /media/blockchain_data/btc_lnd/lnd /root/.lnd
 	alias "lncli"="lncli --chain=bitcoin"
-elif [ $ACTIVE_CHAIN = "LITECOIN" ]; then
+elif [ "$ACTIVE_CHAIN"="LITECOIN" ]; then
 	ln -s /media/blockchain_data/ltc_lnd/litecoin /root/.litecoin
 	ln -s /media/blockchain_data/ltc_lnd/lnd /root/.lnd
 	alias "lncli"="lncli --chain=litecoin"
