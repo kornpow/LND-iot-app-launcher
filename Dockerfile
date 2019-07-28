@@ -27,6 +27,7 @@ RUN apt-get update && \
 	fail2ban \
 	vim \
 	systemd \
+	whiptail \
 	sshfs && \
 	pip3 install -U pip setuptools && \
 rm -rf /var/lib/apt/lists/*
