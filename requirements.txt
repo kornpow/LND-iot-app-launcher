@@ -1,5 +1,8 @@
 #flask
 python-bitcoinrpc
+# if something asks for rpc package it means the google rpc somehow got broken
+# do not try to do rpc it is a rabbithole of brokenness
+# rpc
 grpcio
 googleapis-common-protos
 grpcio-tools
