@@ -23,9 +23,6 @@ export PATH=$PATH:$GOPATH/bin
 
 go version
 
-
-dphys-swapfile swapon
-
 #source /etc/profile
 
 # *****************************
@@ -81,6 +78,26 @@ mkdir -p /media/blockchain_data/
 echo "UUID=$BLOCKCHAIN_UUID  /media/blockchain_data/      $BLOCKCHAIN_FSTYPE            defaults,errors=remount-ro 0       1" > /etc/fstab
 mount -a
 ls /media/blockchain_data/
+
+SWAP_SETUP=$(tac /etc/dphys-swapfile | egrep -m 1 .)
+if [ $SWAP_SETUP == "CONF_SWAPFILE=/media/blockchain_data/swapfile"]; then
+	echo "Configuring the system files for the swap file!"
+	dphys-swapfile swapoff
+	sudo dphys-swapfile uninstall
+	echo "CONF_SWAPFILE=/media/blockchain_data/swapfile" >> /etc/dphys-swapfile
+fi
+
+if [ ! -f /media/blockchain_data/swapfile ]; then
+	echo "Creating a swap file!"
+	dd if=/dev/zero of=/media/blockchain_data/swapfile count=1000 bs=1MiB
+	chmod 600 /media/blockchain_data/swapfile
+	mkswap /media/blockchain_data/swapfile
+	dphys-swapfile setup
+fi
+
+# This need to happen every boot-up
+dphys-swapfile swapon
+
 
 # Link data on drive to standard location used by bitcoind and lnd.
 # Notice no trailing slash on source!
