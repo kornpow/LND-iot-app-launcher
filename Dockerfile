@@ -43,11 +43,12 @@ COPY ./requirements.txt /requirements.txt
 RUN /bin/bash -c 'source /usr/src/app/env/bin/activate && pip3 install -r /requirements.txt --only-binary=:all: --python-version 36 --implementation cp --abi cp36m --platform=linux_armv7l --extra-index-url https://www.piwheels.org/simple --target /usr/src/app/env/lib/python3.6/site-packages'
 
 # Generate a swapfile, and copy to SSD?
-RUN dphys-swapfile swapoff && sudo dphys-swapfile uninstall && 
-	echo "CONF_SWAPFILE=/root/swapfile" >> /etc/dphys-swapfile &&
-	dd if=/dev/zero of=/root/swapfile count=1000 bs=1MiB &&
-	chmod 600 /root/swapfile &&
-	mkswap /root/swapfile &&
+RUN dphys-swapfile swapoff && \
+	sudo dphys-swapfile uninstall && \
+	echo "CONF_SWAPFILE=/root/swapfile" >> /etc/dphys-swapfile && \
+	dd if=/dev/zero of=/root/swapfile count=1000 bs=1MiB && \
+	chmod 600 /root/swapfile && \
+	mkswap /root/swapfile && \
 	dphys-swapfile setup
 
 # This should bring you into python environment on boot
