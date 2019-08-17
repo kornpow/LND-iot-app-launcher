@@ -27,6 +27,7 @@ RUN apt-get update && \
 	vim \
 	systemd \
 	whiptail \
+	dphys-swapfile \
 	sshfs && \
 	pip3 install -U pip setuptools && \
 rm -rf /var/lib/apt/lists/*
@@ -40,6 +41,14 @@ COPY ./requirements.txt /requirements.txt
 
 # Enter python environment and install packages 
 RUN /bin/bash -c 'source /usr/src/app/env/bin/activate && pip3 install -r /requirements.txt --only-binary=:all: --python-version 36 --implementation cp --abi cp36m --platform=linux_armv7l --extra-index-url https://www.piwheels.org/simple --target /usr/src/app/env/lib/python3.6/site-packages'
+
+# Generate a swapfile, and copy to SSD?
+RUN dphys-swapfile swapoff && sudo dphys-swapfile uninstall && 
+	echo "CONF_SWAPFILE=/root/swapfile" >> /etc/dphys-swapfile &&
+	dd if=/dev/zero of=/root/swapfile count=1000 bs=1MiB &&
+	chmod 600 /root/swapfile &&
+	mkswap /root/swapfile &&
+	dphys-swapfile setup
 
 # This should bring you into python environment on boot
 RUN echo "source /usr/src/app/env/bin/activate" >> /etc/bash.bashrc && echo "source /etc/bash.bashrc" >> /etc/profile

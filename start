@@ -23,6 +23,9 @@ export PATH=$PATH:$GOPATH/bin
 
 go version
 
+
+dphys-swapfile swapon
+
 #source /etc/profile
 
 # *****************************
