@@ -1,5 +1,5 @@
 from balena import Balena
-from balena.exceptions import RequestError
+from balena.exceptions import RequestError, ServiceNotFound
 from pprint import pprint
 import sys
 import os
@@ -17,6 +17,7 @@ env_var_defaults = [
     ("LITECOIND_VERSION","0.16.3"),
     ("LND_VERSION","v0.7.1-beta"),
     ("BLOCKCHAIN_UUID",block_partition_uuid),
+    ("BLOCKCHAIN_FSTYPE","ext4"),
 ]
 
 def selectAppFromList():
@@ -36,7 +37,13 @@ def selectAppFromList():
 
 def createDefaultBalenaENVVars(id):
     for var in env_var_defaults:
-        balena.models.environment_variables.service_environment_variable.create(id, 'main', var[0], var[1])
+        try:
+            balena.models.environment_variables.service_environment_variable.create(id, 'main', var[0], var[1])
+            print("SUCCESS: Created Variable %s with Value: %s" % (var[0],var[1]) )
+        except ServiceNotFound as e:
+            print("ERROR: You must have pushed to the balena origin at least once to create environment variables! Service Name: %s" % e)
+        except RequestError as e:
+            print("WARNING: Request Error: %s. Variable: %s already exists! Skipping!" % (e, var[0]) )
 
 if __name__ == '__main__':
     balena.auth.login_with_token(os.environ["BALENA_NODE"])

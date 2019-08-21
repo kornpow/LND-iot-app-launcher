@@ -98,6 +98,8 @@ fi
 # This need to happen every boot-up
 dphys-swapfile swapon
 
+free
+
 
 # Link data on drive to standard location used by bitcoind and lnd.
 # Notice no trailing slash on source!
