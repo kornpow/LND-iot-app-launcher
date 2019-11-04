@@ -35,8 +35,11 @@ The goal of this project is to be able to create a Bitcoin or Litecoin Lightning
 1. Download Balena Etcher in order to burn images to MicroSD cards.
 1. Follow the steps to burn the MicroSD card using Etcher, you'll probably need a MicroSD to SD or MicroSD to USB adapter.
 
+### Preload Latest Build to Fleet
+1. sudo balena preload balena-cloud-LNDBerry-raspberrypi3-2.43.0+rev1-dev-v10.2.2.img --app={app id}
 
 ## Device Configuration
+
 1. Navigate to your device visible on the Balena Dashboard. ![Dashboard](https://i.imgur.com/ZubjE8L.png)
 1. Make a fork of this repo, and clone it to your machine.
 	1. Note: You need to fork it since Balena uses a build pattern of adding a new remote and then you push up your image with ```git push balena master```
