@@ -3,13 +3,14 @@
 # LEARN MORE ABOUT BASE IMAGES AND SUPPORTED PLATFORMS HERE:
 # https://www.balena.io/docs/reference/base-images/base-images/
 #Pi3
-FROM balenalib/raspberrypi3-ubuntu:latest
+# FROM balenalib/raspberrypi3-ubuntu:latest
+#Pi4
+FROM balenalib/raspberrypi4-64-ubuntu:latest
 #Odroid XU4
 #FROM balenalib/odroid-xu4-ubuntu
 # FROM balenalib/raspberrypi3-64-debian
 
 RUN apt-get update && \
-	apt-get upgrade -y && \
 	apt-get install -y \
 	git \
 	wget \
@@ -28,10 +29,11 @@ RUN apt-get update && \
 	systemd \
 	whiptail \
 	dphys-swapfile \
+	openssh-server \
 	sshfs && \
-	pip3 install -U pip setuptools && \
 	rm -rf /var/lib/apt/lists/*
 
+RUN pip3 install -U pip setuptools
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
@@ -60,16 +62,24 @@ RUN echo "source /usr/src/app/env/bin/activate" >> /etc/bash.bashrc && echo "sou
 # echo "download & install of golang 12.7"
 # sha256sum go1.12.7.linux-armv6l.tar.gz | awk -F " " '{ print $1 }' \
 # echo "The final output of the command above should be 48edbe936e9eb74f259bfc4b621fafca4d4ec43156b4ee7bd0d979f257dcd60a" \
-RUN wget -nv --report-speed=bits https://dl.google.com/go/go1.13.4.linux-armv6l.tar.gz && \
-	tar -xzf go1.13.4.linux-armv6l.tar.gz -C /root
+ENV GO_BIN go1.13.4.linux-arm64.tar.gz
+# RUN wget -nv --report-speed=bits https://dl.google.com/go/go1.13.4.linux-armv6l.tar.gz
 
-RUN echo "export PATH=$PATH:/root/go/bin\nexport GOPATH=/root/gocode\nexport PATH=$PATH:$GOPATH/bin" >> /etc/bash.bashrc
+
+RUN wget -nv --report-speed=bits https://dl.google.com/go/$GO_BIN
+RUN tar -xvzf $GO_BIN -C /root
+
+RUN mkdir /root/gocode
+RUN echo "export GOPATH=/root/go\nexport PATH=$PATH:/root/go/bin" > .profile
+
+# export GOPATH=/root/gocode\nexport PATH=$PATH:$GOPATH/bin" >> /etc/bash.bashrc
+RUN bash -c "source .profile && env && go version"
 ENV VERSION 0.0.1
 
 # Copy the startup script to the image
 COPY start /usr/src/app
 COPY start_wowee /usr/src/app
-
+COPY scripts /usr/src/app/scripts
 # COPY code /usr/src/app/code
 
 
