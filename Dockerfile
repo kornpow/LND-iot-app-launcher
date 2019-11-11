@@ -73,7 +73,7 @@ RUN mkdir /root/gocode
 RUN echo "export GOPATH=$HOME/go\nexport PATH=$PATH:$GOPATH/bin" > /root/.profile
 
 # export GOPATH=/root/gocode\nexport PATH=$PATH:$GOPATH/bin" >> /etc/bash.bashrc
-RUN bash -c "source .profile && env && go version"
+RUN bash -c "source $HOME/.profile && env && go version"
 ENV VERSION 0.0.1
 
 # Copy the startup script to the image
