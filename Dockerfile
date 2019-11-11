@@ -70,7 +70,7 @@ RUN wget -nv --report-speed=bits https://dl.google.com/go/$GO_BIN
 RUN tar -xvzf $GO_BIN -C /root
 
 RUN mkdir /root/gocode
-RUN echo "export GOPATH=/root/go\nexport PATH=$PATH:/root/go/bin" > .profile
+RUN echo "export GOPATH=$HOME/go\nexport PATH=$PATH:$GOPATH/bin" > /root/.profile
 
 # export GOPATH=/root/gocode\nexport PATH=$PATH:$GOPATH/bin" >> /etc/bash.bashrc
 RUN bash -c "source .profile && env && go version"
