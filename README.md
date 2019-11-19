@@ -67,7 +67,8 @@ In the Balena dashboard, click "S(x) Device Service Variables". These are global
 	* 0.16.3
 	* 0.17.1 ( Note this version is not compatible with LND 0.6.1)
 * LND_VERSION ( Which Version of LND to use! )
-	* v0.7.1-beta-rc2
+	* v0.8.0-beta
+	* v0.7.1-beta
 	* v0.7.0-beta
 	* Choose from options here: [LND Releases](https://github.com/lightningnetwork/lnd/releases)
 * BLOCKCHAIN_UUID (identifier of the SSD partition with the blockchain data)
@@ -78,6 +79,9 @@ In the Balena dashboard, click "S(x) Device Service Variables". These are global
 
 ## Balena Commands
 Balena has a CLI that we will use mostly for accessing our IoT lightning nodes from anywhere with Internet. Balena's vpn capability is very useful, as it eliminates the need for port forwarding for accessing devices over SSH.
+
+Install Balena-CLI
+
 
 Obtain API
 ![Obtain access token](https://cdn1.imggmi.com/uploads/2019/6/5/bd0d7f0342ef811b9d719a844db50d37-full.png)
@@ -91,8 +95,8 @@ SSH into device, you can specify a UUID if you want, or it will give a list for 
 
 Useful alias' for using the node:
 ### User Machine
-This uses the balena cli to ssh to your node from anywhere in the world.
-* ```alias "nodroid"="balena ssh {{uuid}}"```
+This uses the balena cli to ssh to your node, it uses a vpn which makes getting to your node from anywhere easy.
+* ```echo 'alias nodroid="balena ssh Nodroid' >> ~/.bashrc```
 
 ### Node
 This is a handy alias for using litecoin
