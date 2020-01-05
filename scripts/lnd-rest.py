@@ -319,9 +319,16 @@ def listChanFees(chan_id=None):
 	# x = chan_info.join(z).fillna(0)
 	return c
 
+
 # System Functions
+def getInfo():
+	url = '/v1/getinfo'
+	lnreq = sendGetRequest(url)
+	return lnreq
+	
 def getBlockHeight():
-	return sendGetRequest(url2)['block_height']
+	return getInfo()['block_height']
+	# return sendGetRequest(url2)['block_height']
 
 def getMyPK():
 	return sendGetRequest(url2)['identity_pubkey']
