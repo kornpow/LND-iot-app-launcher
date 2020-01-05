@@ -91,7 +91,7 @@ SWAP_SETUP=$(tac /etc/dphys-swapfile | egrep -m 1 .)
 if [ $SWAP_SETUP != "CONF_SWAPFILE=/media/blockchain_data/swapfile" ]; then
 	echo "Configuring the system files for the swap file!"
 	dphys-swapfile swapoff
-	sudo dphys-swapfile uninstall
+	dphys-swapfile uninstall
 	echo "CONF_SWAPFILE=/media/blockchain_data/swapfile" >> /etc/dphys-swapfile
 fi
 
