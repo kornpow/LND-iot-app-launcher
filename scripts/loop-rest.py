@@ -34,7 +34,17 @@ def sendPostUrl(endpoint,body):
 	pprint(r.text)
 	return r.text
 
+# LOOP TERMS
+def loopOutTerms():
+	url = '/v1/loop/out/terms'
+	return sendGetUrl(url)
 
+def loopInTerms():
+	url = '/v1/loop/in/terms'
+	return sendGetUrl(url)
+
+
+# LOOP OUT COMMANDS
 def loopOutQuote(amt):
 	url = f'/v1/loop/out/quote/{amt}?conf_target=60'
 	print(url)
@@ -66,7 +76,7 @@ def loopOut():
 		pprint(data1)
 		sendPostUrl(url,data1)
 
-
+# LOOP IN COMMANDS
 def loopIn():
 	url = '/v1/loop/in'
 	loopin_data = { 

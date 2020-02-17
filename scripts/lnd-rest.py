@@ -10,14 +10,20 @@ from datetime import datetime, timedelta
 from hashlib import sha256
 pandas.set_option('display.max_colwidth', -1)
 import traceback
+import os
 
 # LND_DIR = '/home/lightning/.lnd/'
-LND_DIR = '/home/skorn/kornpow_cloud/.lnd/'
-
+LND_DIR = f'{os.getenv("HOME")}/kornpow_cloud/.lnd/'
+print(LND_DIR)
+# Get Macaroon into a useable form!
+# TODO: delete me?
 # with open(LND_DIR + 'mainnet/admin.macaroon', 'rb') as f:
 # 	hex_content = binascii.b2a_hex(f.read())
 
+# OR
+# This one is better!
 macaroon = codecs.encode(open(LND_DIR + 'data/chain/bitcoin/mainnet/admin.macaroon', 'rb').read(), 'hex')
+# macaroon = codecs.encode(open(LND_DIR + 'test.macaroon', 'rb').read(), 'hex')
 headers = {'Grpc-Metadata-macaroon': macaroon}
 
 cert_path = LND_DIR + 'tls.cert'
@@ -32,8 +38,10 @@ nodroid = '03077d02d11d2ade200c7fc5ba4fc66c1c599424fb945e88b3896fee6eedc07147'
 loop_server = '021c97a90a411ff2b10dc2a8e32de2f29d2fa49d41bfbb52bd416e460db0747d0d'
 creampay = '02c69a0b4cb468660348d6d457d9212563ad08fb94d424395da6796fb74a13f276'
 
-# {'Grpc-Metadata-macaroon': b'0201036c6e6402cf01030a106271d20b342cb9715ab7f5813f88d00a1201301a160a0761646472657373120472656164120577726974651a130a04696e666f120472656164120577726974651a170a08696e766f69636573120472656164120577726974651a160a076d657373616765120472656164120577726974651a170a086f6666636861696e120472656164120577726974651a160a076f6e636861696e120472656164120577726974651a140a057065657273120472656164120577726974651a120a067369676e6572120867656e65726174650000062042d508b098e94db9256b10f4fe9134b516777bc5b38d3e17b757fddcf9d1d7c7'}
-base_url = 'https://45.63.16.216:8080'
+# {'Grpc-Metadata-macaroon': b''}
+# node_ip = ''
+base_url = f'https://{os.getenv("NODE_IP")}:8080'
+print(base_url)
 
 # GET: channelbalance
 url1 = '/v1/balance/channels'
@@ -95,6 +103,9 @@ data1 = {
 }
 url19 = '/v1/chanpolicy'
 
+# ERROR List
+# {'error': 'permission denied', 'message': 'permission denied', 'code': 2}
+
 ##### Base GET/POST  REQUEST
 def sendPostRequest(endpoint,data="",debug=False):
 	url = base_url + endpoint
@@ -102,12 +113,11 @@ def sendPostRequest(endpoint,data="",debug=False):
 	# pprint(r.json())
 	return r.json()
 
-def sendGetRequest(endpoint, data="",debug=False):
-	url = base_url + endpoint.format(data)
+def sendGetRequest(endpoint, ext="", body=None, debug=False):
+	url = base_url + endpoint.format(ext)
 	if debug:
 		print(f"GET: {url}")
-	r = requests.get(url, headers=headers, verify=cert_path)
-	# pprint(r.json())
+	r = requests.get(url, headers=headers, verify=cert_path, data=body)
 	return r.json()
 
 def sendDeleteRequest(endpoint, data="",debug=False):
@@ -184,13 +194,16 @@ def getPendingChannels():
 	url = '/v1/channels/pending'
 	lnreq = sendGetRequest(url)
 	pending_types = list(set(lnreq.keys()) - {'total_limbo_balance'})
-	a = pandas.DataFrame()
-	for pend in pending_types:
-		b = pandas.DataFrame(lnreq[pend][0]['channel'], index=[0])[['remote_node_pub', 'channel_point', 'capacity','local_balance']]
-		type_list = pend.split("_")
-		b['type'] = type_list[1]
-		a = a.append(b)
-	a['alias'] = a['remote_node_pub'].apply(lambda x: getAlias(x))
+	pending_types
+	print(lnreq)
+	a = pandas.DataFrame(lnreq['pending_open_channels'])
+	print(a)
+	# for pend in pending_types:
+	# 	b = pandas.DataFrame(lnreq[pend][0]['channel'], index=[0])[['remote_node_pub', 'channel_point', 'capacity','local_balance']]
+	# 	type_list = pend.split("_")
+	# 	b['type'] = type_list[1]
+	# 	a = a.append(b)
+	# a['alias'] = a['remote_node_pub'].apply(lambda x: getAlias(x))
 	return a
 
 # a = pandas.DataFrame(lnreq['pending_open_channels'][0]['channel'], index=[0])[['remote_node_pub', 'channel_point', 'capacity','local_balance']]
@@ -278,17 +291,6 @@ def openChannel(pk,sats,fee=1):
 		print(d[0]-d[1])
 		return error
 
-def closeChannel(channel_point,output_index=0,force=False):
-	url = f'/v1/channels/{channel_point}/{output_index}?force={force}'
-	query = {
-		'force':force,
-		'sat_per_byte':'1'
-	}
-	# ,query
-	x = sendDeleteRequest(url)
-	return x
-	# DELETE /v1/channels/{channel_point.funding_txid_str}/{channel_point.output_index}
-
 
 def streamInvoices():
 	url = base_url + '/v1/invoices/subscribe'
@@ -331,7 +333,7 @@ def getBlockHeight():
 	# return sendGetRequest(url2)['block_height']
 
 def getMyPK():
-	return sendGetRequest(url2)['identity_pubkey']
+	return getInfo()['identity_pubkey']
 
 def getAlias(pubkey):
 	lnreq = sendGetRequest(url4,pubkey)
@@ -361,11 +363,14 @@ def createInvoice(amt,memo):
 	return lnreq
 
 def lookupInvoice(invoice_rhash):
-	lnreq = sendGetRequest(f'/v1/invoice/?r_hash={invoice_rhash}')
+	# lnreq = sendGetRequest(f'/v1/invoice/?r_hash={invoice_rhash}')
+	# lnreq = sendGetRequest(f'/v1/invoice/',body={'r_hash':base64.b64encode('a733467edcd121c46138ae7d6aa1b743840513b3bb04dc6d435fde242ce121a0'.encode('UTF-8')).decode()})
+	lnreq = sendGetRequest(f'/v1/invoice/',body=base64.b64encode('a733467edcd121c46138ae7d6aa1b743840513b3bb04dc6d435fde242ce121a0'.encode('UTF-8')).decode())
 	return lnreq
 
-def listInvoices(max_invs=25):
-	lnreq = sendGetRequest(url8+f"?num_max_invoices={max_invs}")
+def listInvoices(max_invs=1000):
+	url = '/v1/invoices'
+	lnreq = sendGetRequest(url+f"?num_max_invoices={max_invs}")
 	df = pandas.DataFrame(lnreq['invoices'])
 	print("Available Data Columns: ")
 	print(df.columns)
@@ -376,8 +381,9 @@ def listInvoices(max_invs=25):
 	
 	# df['alias'] = Series(b).apply(lambda x: getAlias(x), axis=1 )
 	# b= list(a.index)
+	base_columns = ['memo','creation_date_h','state','settled','settle_date_h','amt_paid_sat','amt_paid_msat']
 	
-	return df
+	return df[base_columns]
 	# return df[['memo','amt_paid_sat','state','creation_date_h','settle_date_h','htlcs']]
 	# datetime.fromtimestamp(x['creation_date'])
 
@@ -388,11 +394,15 @@ def decodePR(pr):
 def showFunds():
 	chain_funds_url = '/v1/balance/blockchain'
 	on = sendGetRequest(chain_funds_url)
-	print(f'On-Chain: {on}')
 	offchain_funds_url = '/v1/balance/channels'
 	off = sendGetRequest(offchain_funds_url)
-	print(f'Off-Chain: {off}')
-	return on,off
+
+	data = {'on-chain':on,'off-offchain':off}
+
+	print(f'On-Chain: {on}\t Off-Chain: {off}')
+	print(data)
+	funds_frame = pandas.DataFrame(data)
+	return funds_frame
 
 
 def addFees(hop,fee_msat):
@@ -460,14 +470,16 @@ def addForwardandFees(route):
 		
 
 # def getForwards(start,end):
-def getForwards():
-	start = int( (datetime.now() - timedelta(days=30)).timestamp() )
+def getForwards(days_past=30):
+	start = int( (datetime.now() - timedelta(days=days_past)).timestamp() )
 	end = int( datetime.now().timestamp() )
 	data = { 'start_time': start, 'end_time': end }
 	lnreq = sendPostRequest(url18,data)
 	fwd_frame = pandas.DataFrame(lnreq['forwarding_events'])
 	# Convert Timestamp to nice datetime
 	fwd_frame['datetime'] = fwd_frame['timestamp'].apply(lambda x: datetime.fromtimestamp(int(x)) )
+	print(f'Number of Satoshi Made This Month: {pandas.to_numeric(fwd_frame["fee_msat"]).sum()/1000}!')
+	print(f'AVG Number of Satoshi Made Per Day: {pandas.to_numeric(fwd_frame["fee_msat"]).sum()/1000/days_past}!')
 	return fwd_frame
 
 def queryRoute(src_pk, dest_pk, pay_amt=123,frame=False):
@@ -578,6 +590,38 @@ def hopFrame(hops):
 	return hframe
 
 
+# ON-CHAIN
+def listChainTxns(show_columns=False,add_columns=None):
+	url = '/v1/transactions'
+	lnreq = sendGetRequest(url)
+	lnframe = pandas.DataFrame(lnreq['transactions'])
+	lnframe['ts_h'] = lnframe.apply(lambda x: datetime.fromtimestamp(int(x['time_stamp'])), axis=1 )
+	default_columns = ['ts_h','num_confirmations','amount','tx_hash','total_fees']
+	if add_columns != None:
+		default_columns = default_columns + add_columns
+	if show_columns:
+		print(lnframe.columns)
+
+	return lnframe[default_columns]
+
+def closeChannel(channel_point,output_index=0,force=False):
+	url = f'/v1/channels/{channel_point}/{output_index}?force={force}'
+	query = {
+		'force':force,
+		'sat_per_byte':'1'
+	}
+	# ,query
+	x = sendDeleteRequest(url)
+	return x
+	# DELETE /v1/channels/{channel_point.funding_txid_str}/{channel_point.output_index}
+
+def listCoins():
+	url = '/v1/utxos'
+	lnreq = sendGetRequest(url)
+	lnframe = pandas.DataFrame(lnreq['utxos'])
+	return lnframe
+
+
 def blahroute():
 	# # def buildRoute():
 	# # 	# Destination pubkey
@@ -666,82 +710,7 @@ def blahroute():
 	# lnreq
 
 
-	# code.interact(local=locals())
 
-# route = blahroute()
-# getAlias('')
-# getChanPolicy('')
-
-
-# lnreq = PayByRoute(send_route)
-# lnreq
-
-# aroute = {'hops': [{'amt_to_forward': '75',
-#                              'amt_to_forward_msat': '75000',
-#                              'chan_capacity': '8000000',
-#                              'chan_id': '659227589725585409',
-#                              'expiry': 603682,
-#                              'fee_msat': '400',
-#                              'pub_key': '03da1c27ca77872ac5b3e568af30673e599a47a5e4497f85c7b5da42048807b3ed',
-#                              'tlv_payload': True},
-#                             {'amt_to_forward': '75',
-#                              'amt_to_forward_msat': '75000',
-#                              'chan_id': '622281799946731520',
-#                              'expiry': 603538,
-#                              'pub_key': '03864ef025fde8fb587d989186ce6a4a186895ee44a926bfc370e2c366597a3f8f',
-#                              'tlv_payload': True},
-#                             {'amt_to_forward': '75',
-#                              'amt_to_forward_msat': '75000',
-#                              'chan_id': '632587522506096640',
-#                              'expiry': 603538,
-#                              'pub_key': '024655b768ef40951b20053a5c4b951606d4d86085d51238f2c67c7dec29c792ca'}],
-#                    'total_amt': '75',
-#                    'total_amt_msat': '75400',
-#                    'total_fees_msat': '400',
-#                    'total_time_lock': 603712}
-
-
-# route1 = queryRoute(my_key,nodroid,2000)
-# lnreq = PayByRoute(route1,ph)
-
-
-# a = listChannels()
-# aroute = blahroute()
-# hframe = hopFrame(aroute['hops'])
-# b = listChanFees()
-
-# hops = queryRoute(my_key,satsplace) + queryRoute(satsplace,bitrefill) + queryRoute(bitrefill,my_key)
-# hops = queryRoute(my_key,satsplace)
-# a = hopFrame(hops)
-# b = routeSetExpiry(a)
-# c = routeSetFees(b)
-# d = queryRoute(my_key,satsplace,frame=True)
-# d['total_fees_msat'] = c['fee_msat'].sum(axis=0)
-# d['total_fees'] = floor(d['total_fees_msat']/1000)
-# d['total_amt_msat'] = c.at[len(c)-1,'amt_to_forward_msat'] + d['total_fees_msat']
-# d['total_amt'] = floor(d['total_amt_msat']/1000)
-# d['total_time_lock'] = c.iloc[0]['expiry'] + 14
-
-# d['total_fees_msat'] = str(d['total_fees_msat'])
-# d['total_fees'] = str(d['total_fees'])
-# d['total_amt_msat'] = str(d['total_amt_msat'])
-# d['total_amt'] = str(d['total_amt'])
-# d['total_time_lock'] = str(d['total_time_lock'])
-# z = createInvoice(123,'test circular route')
-# pr = 'lnbc1230n1pw7r7mypp5xxc4w2n38797tf9pxxumtyvexaadms3x2t640mwzntwfu8p959lsdzz2pshjmt9de6zqen0wgsrzv3nypcxj7r9d3ejqct5ypekzar0wd5xjuewwpkxzcm99cxqzjccqp2rzjqfuuytkh5p5dzrwp5w9wvmfdv3s7y6fzd3sztrqzrvwaehlykq9ugzfvncqqygqqqqqqqqqqqqqq86qq9qcaqu04gy4zpa4kg0re8r8v6zx4244wvgzjfxkcj07lg7jjfukljhazfa328p36ckxqw2av0clr2vxykhvq6s33253j8pj2a6k3safrcpqpxkfs'
-# ph = decodePR(z['payment_request'])['payment_hash']
-# ph = decodePR(pr)['payment_hash']
-# strings = list(set(c.columns) - set(['tlv_payload','expiry']))
-# c[strings] = c[strings].astype(str)
-
-# strings = list(set(c.columns) - set(['alias','chan_capacity']))
-# pprint(c.to_dict(orient='records'))
-# d['hops'] = c[strings].to_dict(orient='records')
-# route = d.copy()
-
-# route[list(set(route.keys()) - set(['hops']))]
-# x = PayByRoute(route,pay_hash=ph)
-# print(x)
 
 
 code.interact(local=locals())
@@ -764,12 +733,4 @@ code.interact(local=locals())
 # roasbeef
 # if the last node gets a CLTV of 40, and the onion says it should be 50, then they’ll reject the HTLC
 # we send the information twice basically: what the penultimate node shoudl extend, and what the final node should receive
-
-
-
-# 1sat + (250,000 * 1 / 1000000)
-# 1sat + (250,000 * 0.000001) = 1.25sat
-# LNBig:
-# 1sat + (250,000 * 3200 / 1000000)
-# 1sat + (250000 * 0.003200)  = 801sat 
 
