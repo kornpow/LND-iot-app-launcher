@@ -9,6 +9,7 @@ from math import floor, fsum
 from datetime import datetime, timedelta
 from hashlib import sha256
 pandas.set_option('display.max_colwidth', -1)
+pandas.set_option('display.max_rows', None)
 import traceback
 import os
 
@@ -149,23 +150,50 @@ def sendPaymentByReq(payreq, outid=None):
 		print(f"Error: payment_error {lnreq['payment_error']}")
 		return lnreq
 
-def rebalance(payreq,outgoing_chan_id,last_hop_pubkey):
+def rebalance(amt,outgoing_chan_id,last_hop_pubkey):
+	payreq = addInvoice(amt,'balance1')['payment_request']
 	endpoint = '/v1/channels/transactions'
 	bdata = {}
-	bdata['allow_self_payment'] = True
+	bdata['fee_limit'] = {'fixed_msat': 4200}
 	bdata['outgoing_chan_id'] = f'{outgoing_chan_id}'
-	# bdata['last_hop_pubkey'] = f'{last_hop_pubkey}'
-	# bdata['last_hop_pubkey'] = codecs.encode(codecs.decode(last_hop_pubkey, 'hex'), 'base64').decode().rstrip('\n')
-	# bdata['last_hop_pubkey'] = base64.b64encode(bytearray.fromhex(last_hop_pubkey) ).decode()
-	bdata['last_hop_pubkey'] = base64.b64encode(last_hop_pubkey.encode('UTF-8') ).decode()
-	# bdata['last_hop_pubkey'] = last_hop_pubkey
-	# bdata['last_hop_pubkey'] = base64.encodebytes(last_hop_pubkey.encode("UTF-8")).decode('ascii')
+	bdata['allow_self_payment'] = True
+	bdata['last_hop_pubkey'] = base64.b64encode(bytes.fromhex(last_hop_pubkey)).decode()
+	bdata['payment_request'] = payreq
+
 	print(bdata)
 	# return bdata
 	# lnreq = sendPostRequest(url,data=bdata,debug=True)
+
 	url = base_url + endpoint
+	start = datetime.now()
 	lnreq = requests.post(url, headers=headers, verify=cert_path, data=json.dumps(bdata))
-	return lnreq
+	end = datetime.now()
+	pprint(lnreq.json())
+	tf = int(lnreq.json()["payment_route"]["total_fees_msat"])/1000
+	dur = (end-start).total_seconds()
+	print(f'Total Routing Fees: {tf}')
+	print(f'Payment Duration: {dur}')
+	return tf,dur,lnreq
+
+
+def listBalanceChannels(cid_list):
+	a = listChannels()
+	b = a.sort_values(by=['tobalance'])
+	c = b['chan_id'].to_frame()
+	# c.to_frame()
+	ilist = []
+	# Get index of rows we want to ignore
+	for idx, row in c.iterrows():
+		print(row[0])
+		print(idx)
+		if row[0] in cid_list:
+			ilist.append(idx)
+
+		# Drop indices
+	d = b.drop(ilist)
+	return d
+
+
 
 def PayByRoute(route,pay_hash=None):
 	if pay_hash == None:
@@ -229,13 +257,28 @@ def getChanPolicy(chanid, pubkey=None):
 	# print(df)
 	return df
 
+def getChannelDisabled(cid,mypk=None):
+	# Build in optimization if PK is handy
+	cframe = getChanPolicy(cid)
+	if mypk == None:
+		mypk = getMyPk()
+	print(mypk)
+	d = cframe[cframe['pubkey'] != mypk]
+	# Get only remaining item left
+	print(d)
+	index = list(set(d.index))[0]
+	print(index)
+	cstate = d.loc[int(index),'disabled']
+	return cstate
+
+
 def getBalance(row):
 	return row['local_balance'] / (row['local_balance']+row['remote_balance'])
 
 def getToBalance(row):
 	return (row['balanced']-0.5) * (row['local_balance']+row['remote_balance'])
 
-def listChannels(chanpoint=None,all=False):
+def listChannels(chanpoint=None,all=False,disabled=False):
 	lnreq = sendGetRequest(url5)
 	d = pandas.DataFrame(lnreq['channels'])
 	y = d[['active','chan_id','channel_point','remote_pubkey','local_balance','remote_balance']].fillna(0)
@@ -244,7 +287,11 @@ def listChannels(chanpoint=None,all=False):
 	y['balanced'] = y.apply(getBalance, axis=1)
 	y['alias'] = y.apply(lambda x: getAlias(x.remote_pubkey), axis=1)
 	y['tobalance'] = y.apply(getToBalance, axis=1)
- 	# y = y.set_index("channel_point")
+	y = y.sort_values(by=['balanced'])
+	# y = y.set_index("channel_point")
+	if disabled:
+		pk = getMyPk()
+		y['d_cp'] = y.apply(lambda x: getChannelDisabled(x,pk), axis=1)
 	if chanpoint:
 		y = y[y.index==chanpoint]
 	if all:
@@ -299,7 +346,7 @@ def streamInvoices():
 		a = json.loads(line.decode("UTF-8"))
 		print(a)
 
-
+# Channel Point to Channel Id
 def CP2CID(chan_point, chan_list):
 	chan_list.reset_index(inplace=True)
 	a = chan_list[channel_point==chan_point]
@@ -326,7 +373,13 @@ def listChanFees(chan_id=None):
 def getInfo():
 	url = '/v1/getinfo'
 	lnreq = sendGetRequest(url)
+	# lnframe = pandas.DataFrame(lnreq)
 	return lnreq
+
+def getMyPk():
+	info = getInfo()
+	mypk = info['identity_pubkey']
+	return mypk
 	
 def getBlockHeight():
 	return getInfo()['block_height']
@@ -356,10 +409,10 @@ def decodePR(pr):
 	return lnreq
 
 # Receiving Functions
-def createInvoice(amt,memo):
+def addInvoice(amt,memo):
 	url = '/v1/invoices'
 	data = {'memo':memo,'value':amt}
-	lnreq = sendPostRequest(url8,data)
+	lnreq = sendPostRequest(url,data)
 	return lnreq
 
 def lookupInvoice(invoice_rhash):
@@ -615,11 +668,17 @@ def closeChannel(channel_point,output_index=0,force=False):
 	return x
 	# DELETE /v1/channels/{channel_point.funding_txid_str}/{channel_point.output_index}
 
-def listCoins():
+def listCoins(show_columns=False,add_columns=None):
 	url = '/v1/utxos'
 	lnreq = sendGetRequest(url)
 	lnframe = pandas.DataFrame(lnreq['utxos'])
-	return lnframe
+
+	default_columns = ['type','address','amount_sat','confirmations']
+	if add_columns != None:
+		default_columns = default_columns + add_columns
+	if show_columns:
+		print(lnframe.columns)
+	return lnframe[default_columns]
 
 
 def blahroute():
