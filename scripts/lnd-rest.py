@@ -150,11 +150,11 @@ def sendPaymentByReq(payreq, outid=None):
 		print(f"Error: payment_error {lnreq['payment_error']}")
 		return lnreq
 
-def rebalance(amt,outgoing_chan_id,last_hop_pubkey):
+def rebalance(amt,outgoing_chan_id,last_hop_pubkey,fee_msat=4200):
 	payreq = addInvoice(amt,'balance1')['payment_request']
 	endpoint = '/v1/channels/transactions'
 	bdata = {}
-	bdata['fee_limit'] = {'fixed_msat': 4200}
+	bdata['fee_limit'] = {'fixed_msat': fee_msat}
 	bdata['outgoing_chan_id'] = f'{outgoing_chan_id}'
 	bdata['allow_self_payment'] = True
 	bdata['last_hop_pubkey'] = base64.b64encode(bytes.fromhex(last_hop_pubkey)).decode()
@@ -192,6 +192,8 @@ def listBalanceChannels(cid_list):
 		# Drop indices
 	d = b.drop(ilist)
 	return d
+	# AUTO BALANCE SCRIPT!
+	# a[a['balanced'] > 0.5].apply(lambda x: rebalance(int(x['tobalance']),x['chan_id'],"032c17323caa51269b5124cf07a0c03772587ad8199e692cc3aae8397454367d34",4200),axis=1)
 
 
 
