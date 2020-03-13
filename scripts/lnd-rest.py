@@ -314,21 +314,26 @@ def connectPeer(ln_at_url):
 	lnreq = sendPostRequest(url,data)
 	return lnreq
 
-def openChannel(pk,sats,fee=1):
+def openChannel(ln_at_url,sats,fee=1):
 	url = '/v1/channels'
-	apk = f'{pk}'.encode('UTF-8')
+	# apk = f'{pk}'.encode('UTF-8')
+	print(connectPeer(ln_at_url))
+	pubkey,host = ln_at_url.split('@')
+	# 'node_pubkey_string': f'{pk}',
 	data = {
-		'node_pubkey': base64.b64encode(apk).decode(),
-		'node_pubkey_string': f'{pk}',
+		'node_pubkey_string': f'{pubkey}',
+		# This doesnt work but theoretically this is the better way
+		# 'node_pubkey': base64.b64encode(bytes.fromhex(pubkey)).decode(),
 		'local_funding_amount':f'{sats}',
 		'sat_per_byte': f'{fee}'
 		}
+	print(data)
 	lnreq = sendPostRequest(url,data)
 	# if 'error' in lnreq.keys():
 	pprint(lnreq)
 	try:
 		txid = codecs.encode(lnreq['funding_txid_bytes'].encode('UTF-8'),'hex')
-		print(f"TXID:\n{ txid }")
+		print(f"TXID:\t{ txid }")
 		return txid
 	except KeyError:
 		error = lnreq['error']
@@ -670,9 +675,14 @@ def closeChannel(channel_point,output_index=0,force=False):
 	return x
 	# DELETE /v1/channels/{channel_point.funding_txid_str}/{channel_point.output_index}
 
-def listCoins(show_columns=False,add_columns=None):
-	url = '/v1/utxos'
+def listCoins(min_confs=0,show_columns=False,add_columns=None):
+	url = f'/v1/utxos?min_confs={min_confs}'
 	lnreq = sendGetRequest(url)
+
+	# Guard Clause
+	if 'utxos' not in lnreq.keys():
+		print("No UTXOs available")
+		return
 	lnframe = pandas.DataFrame(lnreq['utxos'])
 
 	default_columns = ['type','address','amount_sat','confirmations']
