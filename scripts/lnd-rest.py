@@ -35,6 +35,10 @@ cert_path = LND_DIR + 'tls.cert'
 base_url = f'https://{os.getenv("NODE_IP")}:8080'
 print(base_url)
 
+# THIS HOLDS A CACHE OF PUB-KEY to ALIAS CONVERSIONS
+pkdb = {}
+
+
 # GET: channelbalance
 url1 = '/v1/balance/channels'
 # GET: getinfo
@@ -352,6 +356,10 @@ def listChannels(chanpoint=None,all=False,disabled=False):
 	y['alias'] = y.apply(lambda x: getAlias(x.remote_pubkey), axis=1)
 	y['tobalance'] = y.apply(getToBalance, axis=1)
 	y = y.sort_values(by=['balanced'])
+	# Get balance ratio of all channels
+	rb = y['remote_balance'].sum()
+	lb = y['local_balance'].sum()
+	print(f'Local to remote balance ratio: {lb/(lb+rb)}')
 	# y = y.set_index("channel_point")
 	if disabled:
 		pk = getMyPk()
@@ -473,7 +481,6 @@ def getBlockHeight():
 def getMyPK():
 	return getInfo()['identity_pubkey']
 
-pkdb = {}
 
 def getAlias(pubkey,index=True):
 	try:
