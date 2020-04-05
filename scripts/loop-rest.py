@@ -3,14 +3,9 @@ import codecs
 from pprint import pprint
 from math import floor
 from datetime import datetime, timedelta
+import urllib.parse
 
-# LND_DIR = '/home/lightning/.lnd/'
-# cert_path = LND_DIR + 'tls.cert'
-
-def sendPostRequest(endpoint,data=""):
-	r = requests.post(base_url + endpoint, data=json.dumps(data))
-	pprint(r.json())
-	return r.json()
+base_url = 'http://127.0.0.1:8081'
 
 def sendGetRequest(endpoint, data=""):
 	global base_url
@@ -20,7 +15,30 @@ def sendGetRequest(endpoint, data=""):
 	pprint(r.text)
 	return r.text
 
-base_url = 'http://127.0.0.1:8081'
+def sendPostRequest(endpoint,data=""):
+	r = requests.post(base_url + endpoint, data=json.dumps(data))
+	pprint(r.json())
+	return r.json()
+
+
+def listSwaps():
+	url = '/v1/loop/swaps'
+	loopreq = json.loads(sendGetRequest(url))
+	print(loopreq)
+	return loopreq
+
+# Pass in result from list swaps
+# This function will convert to url-safe
+def getSwap(id_bytes):
+	id_url_safe = id_bytes.replace('+','-').replace('/','_')
+	id_percent_encoded = urllib.parse.quote(id_url_safe)
+	url = f'/v1/loop/swap/{id_percent_encoded}'
+	loopreq = json.loads(sendGetRequest(url))
+	return loopreq
+
+# id_safe = urllib.parse.quote_from_bytes(id_bytes.encode('UTF-8'),safe='')
+# quote_from_bytes(bytes, safe=''
+# # , safe=''
 
 def sendGetUrl(endpoint):
 	target_url = base_url + endpoint
@@ -50,7 +68,7 @@ def loopOutQuote(amt):
 	print(url)
 	sendGetUrl(url)
 
-def loopOut():
+	def loopOut():
 	url = '/v1/loop/out'
 	# 389800 + 280000
 	max_swap_fee = 2000
@@ -97,6 +115,9 @@ url1 = '/v1/loop/in'
 url2 = '/v1/loop/in/quote/{}'
 url3 = '/v1/loop/out/quote/{}'
 url4 = '/v1/loop/out'
+url5 = 'v1/loop/swap/{}'
+url6 = 'v1/loop/swaps'
+
 
 
 
