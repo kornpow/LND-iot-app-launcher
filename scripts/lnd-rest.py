@@ -644,6 +644,16 @@ def fwdsToday(ff):
 	fwds = ff.query(f'dts.str.contains("{datetime.now().strftime("%Y-%m-%d")}")').shape[0]
 	return fwds
 
+# for i in range(30,-1,-1):
+# 	fwdsStats(a,i)
+def fwdsStats(ff,days_ago=0):
+	day_str = (datetime.now()-timedelta(days=days_ago)).strftime("%Y-%m-%d")
+	day_fwds = ff.query(f'dts.str.contains("{day_str}")')
+	day_fwds_count = ff.query(f'dts.str.contains("{day_str}")').shape[0]
+	avg_fees = day_fwds.fee_msat.astype('float').mean()
+	avg_forward = day_fwds.amt_in.astype('float').mean()
+	return {'event_day':day_str, 'count':day_fwds_count, 'avg_fees':avg_fees, 'avg_forward':avg_forward}
+
 def fwdByDay(ff,days_past=30):
 	# datetime.strptime('2020-04-04','%Y-%m-%d')
 	t = datetime.now().date() - timedelta(days_past)
@@ -808,6 +818,22 @@ def listChainTxns(show_columns=False,add_columns=None):
 		print(lnframe.columns)
 
 	return lnframe[default_columns]
+
+def sendCoins(addr,amt,toself=True):
+	url = '/v1/transactions'
+	if toself:
+		addr = getNewAddress()
+	# either target_conf or sat_per_byte used at one time
+	data = { 
+		# 'target_conf': 20,
+		'sat_per_byte': 5, 
+		'send_all': False, 
+		'addr': f'{addr}', 
+		'amount': f'{amt}',
+		'spend_unconfirmed': True
+	}
+	lnreq = sendPostRequest(url,data)
+	return lnreq
 
 def closeChannel(channel_point,output_index=0,force=False):
 	url = f'/v1/channels/{channel_point}/{output_index}?force={force}'
