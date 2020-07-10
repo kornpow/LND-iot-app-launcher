@@ -57,23 +57,17 @@ RUN /bin/bash -c 'source /usr/src/app/env/bin/activate && pip3 install -r /requi
 # This should bring you into python environment on boot
 RUN echo "source /usr/src/app/env/bin/activate" >> /etc/bash.bashrc && echo "source /etc/bash.bashrc" >> /etc/profile
 
-# Install go
-# echo "golang not found, installing!"
-# echo "download & install of golang 12.7"
-# sha256sum go1.12.7.linux-armv6l.tar.gz | awk -F " " '{ print $1 }' \
-# echo "The final output of the command above should be 48edbe936e9eb74f259bfc4b621fafca4d4ec43156b4ee7bd0d979f257dcd60a" \
-ENV GO_BIN go1.13.4.linux-arm64.tar.gz
-# RUN wget -nv --report-speed=bits https://dl.google.com/go/go1.13.4.linux-armv6l.tar.gz
+# Install GO!
+RUN curl https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz | tar -C /usr/local -xvz && mkdir -p /usr/src/app/go
 
+# Do GO environment things to we can use it
+ENV GOPATH="/usr/src/app/go"
+ENV PATH="/usr/local/go/bin:$GOPATH/bin:$PATH"
 
-RUN wget -nv --report-speed=bits https://dl.google.com/go/$GO_BIN
-RUN tar -xvzf $GO_BIN -C /root
-
-RUN mkdir /root/gocode
-RUN echo "export GOPATH=$HOME/go" >> ~/.profile && echo "export PATH=$PATH:$GOPATH/bin" >> ~/.profile
-
-# export GOPATH=/root/gocode\nexport PATH=$PATH:$GOPATH/bin" >> /etc/bash.bashrc
-# RUN bash -c "source $HOME/.profile && env && go version"
+# Install the latest version of LND!
+RUN go get -d -v github.com/lightningnetwork/lnd && \
+  cd $GOPATH/src/github.com/lightningnetwork/lnd && \
+  make && make install tags="experimental autopilotrpc signrpc walletrpc chainrpc invoicesrpc routerrpc watchtowerrpc dev"
 ENV VERSION 0.0.1
 
 # Copy the startup script to the image
