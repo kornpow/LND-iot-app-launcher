@@ -25,10 +25,10 @@ source /usr/src/app/.profile
 
 go version
 
-while [[ true ]]; do
-	echo "$ACTIVE_CHAIN Lightning Node is UP for $SECONDS seconds!"
-	sleep 5
-done
+# while [[ true ]]; do
+# 	echo "$ACTIVE_CHAIN Lightning Node is UP for $SECONDS seconds!"
+# 	sleep 5
+# done
 
 
 #source /etc/profile
@@ -40,44 +40,14 @@ done
 # git clone --branch $BITCOIND_VERSION git@github.com:bitcoin/bitcoin.git --depth 1
 
 
-wget https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/bitcoin-$BITCOIND_VERSION-arm-linux-gnueabihf.tar.gz
-wget https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/SHA256SUMS.asc
-wget https://bitcoin.org/laanwj-releases.asc
+# wget https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/bitcoin-$BITCOIND_VERSION-arm-linux-gnueabihf.tar.gz
+# wget https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/SHA256SUMS.asc
+# wget https://bitcoin.org/laanwj-releases.asc
 
-tar -xvf bitcoin-$BITCOIND_VERSION-arm-linux-gnueabihf.tar.gz
-install -m 0755 -o root -g root -t /usr/local/bin bitcoin-$BITCOIND_VERSION/bin/*
+# tar -xvf bitcoin-$BITCOIND_VERSION-arm-linux-gnueabihf.tar.gz
+# install -m 0755 -o root -g root -t /usr/local/bin bitcoin-$BITCOIND_VERSION/bin/*
 
-bitcoind --version
-
-# *****************************
-# Download and install Litecoin!
-# *****************************
-wget https://download.litecoin.org/litecoin-$LITECOIND_VERSION/linux/litecoin-$LITECOIND_VERSION-arm-linux-gnueabihf.tar.gz
-wget https://download.litecoin.org/litecoin-$LITECOIND_VERSION/linux/litecoin-$LITECOIND_VERSION-arm-linux-gnueabihf.tar.gz.asc
-wget https://download.litecoin.org/litecoin-$LITECOIND_VERSION/linux/litecoin-$LITECOIND_VERSION-linux-signatures.asc
-
-tar -xvf litecoin-$LITECOIND_VERSION-arm-linux-gnueabihf.tar.gz
-install -m 0755 -o root -g root -t /usr/local/bin litecoin-$LITECOIND_VERSION/bin/*
-
-litecoind --version
-
-
-
-# *****************************
-# Download and install LND!
-# *****************************
-
-# download LND binary and also check out commit on GitHub
-# git clone --branch $LND_VERSION git@github.com:lightningnetwork/lnd.git --depth 1
-# tar -xzf lnd-linux-armv7-$LND_VERSION.tar.gz
-
-wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/lnd-linux-armv7-$LND_VERSION.tar.gz
-wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt
-wget https://github.com/lightningnetwork/lnd/releases/download/$LND_VERSION/manifest-$LND_VERSION.txt.sig
-wget https://keybase.io/roasbeef/pgp_keys.asc
-
-tar -xvf lnd-linux-armv7-$LND_VERSION.tar.gz
-install -m 0755 -o root -g root -t /usr/local/bin lnd-linux-armv7-$LND_VERSION/*
+# bitcoind --version
 
 lnd --version
 
@@ -114,46 +84,21 @@ free
 
 # If statement for bitcoin or litecoin
 if [ "$ACTIVE_CHAIN" = "BITCOIN" ]; then
-	ln -s /media/blockchain_data/btc_lnd/bitcoin /root/.bitcoin
-	ln -s /media/blockchain_data/btc_lnd/lnd /root/.lnd
+	ln -s /media/blockchain_data/bitcoin /root/.bitcoin
 	alias "lncli"="lncli --chain=bitcoin"
 elif [ "$ACTIVE_CHAIN" = "LITECOIN" ]; then
-	ln -s /media/blockchain_data/ltc_lnd/litecoin /root/.litecoin
-	ln -s /media/blockchain_data/ltc_lnd/lnd /root/.lnd
+	ln -s /media/blockchain_data/litecoin /root/.litecoin
 	alias "lncli"="lncli --chain=litecoin"
 fi
 
-# ln -s /media/blockchain_data/.ltcd /root/.ltcd
-# ln -s /media/blockchain_data/.lnd /root/.lnd
-# ln -s /media/blockchain_data/Downloads /root/Downloads
-# ln -s /media/blockchain_data/gocode /root/gocode
-# ln -s /media/blockchain_data/go /root/go
+	ln -s /media/blockchain_data/lnd /root/.lnd
 
 trap exit_script SIGINT SIGTERM
 
-echo "Completed download, installation, and autostart setup of LND and Bitcoind!"
-
-
-export PATH=$PATH:/root/go/bin
-export GOPATH=/root/gocode
-export PATH=$PATH:$GOPATH/bin
-
-trap exit_script SIGINT SIGTERM
-
-echo "Completed download, installation, and autostart setup of LTCD and LND!"
+echo "Starting up!"
 
 # Some kind of infinite loop is required here:
 while [[ true ]]; do
 	echo "$ACTIVE_CHAIN Lightning Node is UP for $SECONDS seconds!"
 	sleep 5
 done
-
-# TODO: LATER
-# Install google grpc stuff
-# Don't Download this quite yet, in the future maybe
-# IDK what I was doing before, but this works. Make sure to enter your VENV
-# And be in the right directory
-git clone --depth 1 --single-branch https://github.com/googleapis/googleapis.git
-curl -o rpc.proto -s https://raw.githubusercontent.com/lightningnetwork/lnd/master/lnrpc/rpc.proto
-python3 -m grpc_tools.protoc --proto_path=googleapis:. --python_out=. --grpc_python_out=. rpc.proto
-# python3 -m http.server 80 &

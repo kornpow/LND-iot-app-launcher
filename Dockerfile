@@ -30,8 +30,17 @@ RUN apt-get update && \
 	whiptail \
 	dphys-swapfile \
 	openssh-server \
-	sshfs && \
+	sshfs \
+	libevent-dev \
+	openssl \
+	zlib1g-dev \
+	&& \
 	rm -rf /var/lib/apt/lists/*
+
+# TOR
+#apt install libevent-dev
+#apt install openssl
+#apt install zlib1g-dev
 
 RUN pip3 install -U pip setuptools
 RUN mkdir -p /usr/src/app
@@ -43,6 +52,8 @@ COPY ./requirements.txt /requirements.txt
 
 # Enter python environment and install packages 
 RUN /bin/bash -c 'source /usr/src/app/env/bin/activate && pip3 install -r /requirements.txt --only-binary=:all: --python-version 36 --implementation cp --abi cp36m --platform=linux_armv7l --extra-index-url https://www.piwheels.org/simple --target /usr/src/app/env/lib/python3.6/site-packages'
+
+
 
 # Generate a swapfile, and copy to SSD?
 # RUN dphys-swapfile swapoff && \
@@ -58,6 +69,11 @@ RUN /bin/bash -c 'source /usr/src/app/env/bin/activate && pip3 install -r /requi
 # This should bring you into python environment on boot
 RUN echo "source /usr/src/app/env/bin/activate" >> /etc/bash.bashrc && echo "source /etc/bash.bashrc" >> /etc/profile
 
+RUN curl https://dist.torproject.org/tor-0.4.3.6.tar.gz | tar -xvz
+#	./configure && \
+#	make && \
+
+
 # Install GO!
 RUN curl https://dl.google.com/go/go1.14.4.linux-arm64.tar.gz | tar -C /usr/local -xvz && mkdir -p /usr/src/app/go
 
@@ -71,6 +87,9 @@ RUN go get -d -v github.com/lightningnetwork/lnd && \
   make && make install tags="experimental autopilotrpc signrpc walletrpc chainrpc invoicesrpc routerrpc watchtowerrpc dev"
 
 ENV VERSION 0.0.1
+
+# Update this last, so we dont have to rebuild LND
+RUN pip3 install git+https://github.com/sako0938/lnd_pyshell
 
 # Copy the startup script to the image
 COPY start /usr/src/app
