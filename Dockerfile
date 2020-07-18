@@ -95,6 +95,7 @@ RUN pip3 install git+https://github.com/sako0938/lnd_pyshell
 COPY start /usr/src/app
 COPY start_wowee /usr/src/app
 COPY scripts /usr/src/app/scripts
+COPY config/lnd.conf .
 # COPY code /usr/src/app/code
 
 

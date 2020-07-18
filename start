@@ -14,40 +14,11 @@ do
         echo $i;
         sleep 0.25;
 	python3 --version
-done  
-# echo 
-
-# export PATH=$PATH:/root/go/bin
-# export GOPATH=/root/gocode
-# export PATH=$PATH:$GOPATH/bin
+done
 
 source /usr/src/app/.profile
 
 go version
-
-# while [[ true ]]; do
-# 	echo "$ACTIVE_CHAIN Lightning Node is UP for $SECONDS seconds!"
-# 	sleep 5
-# done
-
-
-#source /etc/profile
-
-# *****************************
-# Download and install Bitcoin!
-# *****************************
-# download Bitcoin Core binary and also check out commit on GitHub
-# git clone --branch $BITCOIND_VERSION git@github.com:bitcoin/bitcoin.git --depth 1
-
-
-# wget https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/bitcoin-$BITCOIND_VERSION-arm-linux-gnueabihf.tar.gz
-# wget https://bitcoincore.org/bin/bitcoin-core-$BITCOIND_VERSION/SHA256SUMS.asc
-# wget https://bitcoin.org/laanwj-releases.asc
-
-# tar -xvf bitcoin-$BITCOIND_VERSION-arm-linux-gnueabihf.tar.gz
-# install -m 0755 -o root -g root -t /usr/local/bin bitcoin-$BITCOIND_VERSION/bin/*
-
-# bitcoind --version
 
 lnd --version
 
@@ -91,7 +62,14 @@ elif [ "$ACTIVE_CHAIN" = "LITECOIN" ]; then
 	alias "lncli"="lncli --chain=litecoin"
 fi
 
-	ln -s /media/blockchain_data/lnd /root/.lnd
+if [ ! -d /media/blockchain_data/lnd  ]; then 
+	echo "hi";
+	mkdir /media/blockchain_data/lnd;
+fi
+
+ln -s /media/blockchain_data/lnd /root/.lnd
+
+if [ ! -f ]
 
 trap exit_script SIGINT SIGTERM
 
